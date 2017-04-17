@@ -35,11 +35,15 @@ class TwitterClient(Client):
     def to_tweet(cls, json_data):
         twitter_id = json_data["id"]
         text = json_data["text"]
-        created_at = json_data['created_at']
-        date = arrow.Arrow.strptime(created_at, "%a %b %d %H:%M:%S %z %Y")
-        timestamp = date.timestamp
+        timestamp = cls.to_timestamp(json_data["created_at"])
         return twittback.Tweet(twitter_id=twitter_id, text=text,
                                timestamp=timestamp)
+
+    @classmethod
+    def to_timestamp(cls, created_at_str):
+        date = arrow.Arrow.strptime(created_at_str, "%a %b %d %H:%M:%S %z %Y")
+        return date.timestamp
+
 
 
 class FakeClient(Client):
@@ -54,6 +58,7 @@ def get_twitter_client():
     config = twittback.config.read_config()
     client = TwitterClient(config)
     return client
+
 
 def main():
     client = get_twitter_client()
