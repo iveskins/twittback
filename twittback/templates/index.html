@@ -1,0 +1,16 @@
+<h1>Welcome to TwittBack</h1>
+
+<h2>All tweets</h2>
+
+{% for group in year_groups %}
+    {% set year =  group[0] %}
+    {% set months = group[1] %}
+    <h3>{{ year }}</h3>
+    <p>
+    <ul>
+    {% for month in months %}
+      <li>{{ month }}</li>
+    {% endfor %}
+    </p>
+    </ul>
+{% endfor %}

@@ -31,6 +31,10 @@ def index():
     start_timestamp, end_timestamp = repository.date_range()
     return app.html_presenter.gen_index(start_timestamp, end_timestamp)
 
+@app.route("/favicon.ico")
+def favicon():
+    return app.send_static_file("favicon.ico")
+
 
 def setup():
     app_config = twittback.config.read_config()
