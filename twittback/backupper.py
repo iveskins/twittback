@@ -1,6 +1,3 @@
-from twittback import ui
-
-
 class Backupper:
     def __init__(self, *, client, repository):
         self.client = client
@@ -8,7 +5,7 @@ class Backupper:
 
     def yield_latest_tweets(self):
         latest_tweet = self.repository.latest_tweet()
-        ui.info("Feching latest tweets", ui.ellipsis)
+        print("Feching latest tweets ...")
         tweets = self.client.get_latest_tweets()
         for tweet in tweets:
             if latest_tweet and (tweet.twitter_id <= latest_tweet.twitter_id):
@@ -20,9 +17,9 @@ class Backupper:
         to_add = list(latest_tweets)
         self.repository.add(reversed(to_add))
         if to_add:
-            ui.info("Stored", len(to_add), "new tweet(s)", ui.check)
+            print("Stored", len(to_add), "new tweet(s)")
         else:
-            ui.info("No new tweets", ui.check)
+            print("No new tweets")
 
 
 def main():
