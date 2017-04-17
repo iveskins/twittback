@@ -29,10 +29,10 @@ class TwitterClient(Client):
     def get_latest_tweets(self):
         for json_data in self.api.statuses.user_timeline(
                 screen_name=self.screen_name, count=MAX_TWEETS):
-            yield self.to_tweet(json_data)
+            yield self.from_json(json_data)
 
     @classmethod
-    def to_tweet(cls, json_data):
+    def from_json(cls, json_data):
         twitter_id = json_data["id"]
         text = json_data["text"]
         timestamp = cls.to_timestamp(json_data["created_at"])
