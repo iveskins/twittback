@@ -5,6 +5,7 @@ import twittback.server
 
 import pytest
 
+
 @pytest.fixture()
 def app():
     return twittback.server.app

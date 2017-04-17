@@ -4,6 +4,7 @@ import sqlite3
 
 import twittback
 
+# pylint: disable=invalid-name
 TweetSequence = typing.Sequence[twittback.Tweet]
 
 
@@ -49,19 +50,19 @@ class SQLStorage(Storage):
         self.db.executescript(script)
         self.db.commit()
 
-
     def add(self, tweets):
         sql = """
             INSERT INTO tweets
                 (twitter_id, text, timestamp) VALUES
                 (?, ?, ?)
         """
+
         def yield_params():
             for tweet in tweets:
                 yield self.to_row(tweet)
+
         self.db.executemany(sql, yield_params())
         self.db.commit()
-
 
     def latest_tweet(self):
         sql = """
@@ -83,7 +84,6 @@ class SQLStorage(Storage):
         cursor.execute(sql)
         for row in cursor.fetchall():
             yield self.from_row(row)
-
 
     @classmethod
     def from_row(cls, row):
