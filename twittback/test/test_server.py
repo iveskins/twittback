@@ -17,4 +17,4 @@ def test_index(client):
     response = client.get("/")
     assert response.status_code == 200
     data = response.data.decode()
-    assert "from 2017 Jul 07 to 2017 Sep 01" in data
+    assert "Welcome to TwittBack" in data
