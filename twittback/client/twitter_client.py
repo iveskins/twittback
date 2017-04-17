@@ -38,7 +38,7 @@ def from_json(json_data):
     markdown = to_markdown(text, json_data)
     timestamp = to_timestamp(json_data["created_at"])
     return twittback.Tweet(twitter_id=twitter_id, text=markdown,
-                            timestamp=timestamp)
+                           timestamp=timestamp)
 
 
 def to_markdown(tweet_text, metadata):
@@ -99,7 +99,6 @@ def to_timestamp(created_at_str):
 def main():
     client = get_twitter_client()
     latest_tweets = client.get_latest_tweets()
-    import ipdb; ipdb.set_trace()
     for tweet in latest_tweets:
         print(tweet)
 

@@ -12,7 +12,7 @@ class Backupper:
         tweets = self.client.get_latest_tweets()
         for tweet in tweets:
             if latest_tweet and (tweet.twitter_id <= latest_tweet.twitter_id):
-                    break
+                break
             yield tweet
 
     def backup(self):
@@ -26,10 +26,10 @@ class Backupper:
 
 
 def main():
-    import twittback.client
+    import twittback.client.twitter_client
     import twittback.storage
 
-    client = twittback.client.get_twitter_client()
+    client = twittback.client.twitter_client.get_twitter_client()
     storage = twittback.storage.get_sql_storage()
     backupper = Backupper(client=client, storage=storage)
     backupper.backup()

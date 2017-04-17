@@ -1,9 +1,8 @@
 import abc
-import typing
 import sqlite3
 
-import twittback
 from twittback.types import TweetSequence
+import twittback
 import twittback.config
 
 
@@ -39,8 +38,8 @@ class InMemoryStorage(Storage):
 
 class SQLStorage(Storage):
     def __init__(self, db_path):
-        self.db = sqlite3.connect(db_path)
-        self.db.row_factory = sqlite3.Row
+        self.connection = sqlite3.connect(db_path)
+        self.connection.row_factory = sqlite3.Row
         script = """
             CREATE VIRTUAL TABLE IF NOT EXISTS tweets USING fts4 (
                 twitter_id INTEGER NOT NULL,
@@ -48,8 +47,8 @@ class SQLStorage(Storage):
                 timestamp INTEGER NOT NULL
                 UNIQUE(twitter_id))
         """
-        self.db.executescript(script)
-        self.db.commit()
+        self.connection.executescript(script)
+        self.connection.commit()
 
     def add(self, tweets):
         sql = """
@@ -62,8 +61,8 @@ class SQLStorage(Storage):
             for tweet in tweets:
                 yield self.to_row(tweet)
 
-        self.db.executemany(sql, yield_params())
-        self.db.commit()
+        self.connection.executemany(sql, yield_params())
+        self.connection.commit()
 
     def latest_tweet(self):
         sql = """
@@ -71,7 +70,7 @@ class SQLStorage(Storage):
                    ORDER BY twitter_id DESC
                    LIMIT 1
         """
-        cursor = self.db.cursor()
+        cursor = self.connection.cursor()
         cursor.execute(sql)
         res = cursor.fetchone()
         if res:
@@ -84,7 +83,7 @@ class SQLStorage(Storage):
             SELECT twitter_id, text, timestamp FROM tweets
                    ORDER BY twitter_id ASC
         """
-        cursor = self.db.cursor()
+        cursor = self.connection.cursor()
         cursor.execute(sql)
         for row in cursor.fetchall():
             yield self.from_row(row)

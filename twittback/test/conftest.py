@@ -37,6 +37,7 @@ class MessageRecorder():
             if re.search(regexp, message):
                 return message
 
+
 @pytest.fixture()
 def messages(request):
     recorder = MessageRecorder()
