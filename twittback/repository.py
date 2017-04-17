@@ -5,8 +5,10 @@ import arrow
 import twittback
 import twittback.config
 
+
 class NoSuchId(Exception):
     def __init__(self, twitter_id):
+        super().__init__(twitter_id)
         self.twitter_id = twitter_id
 
 
@@ -91,7 +93,6 @@ class Repository:
             raise NoSuchId(twitter_id)
         return self.from_row(row)
 
-
     @classmethod
     def from_row(cls, row):
         return twittback.Tweet(twitter_id=row["twitter_id"],
@@ -114,7 +115,7 @@ class Repository:
     def __str__(self):
         return f"<Repository in {self.db_path}>"
 
+
 def get_repository():
-    config = twittback.config.read_config()
-    db_path = config["db"]["path"]
+    db_path = twittback.config.get_db_path()
     return Repository(db_path)

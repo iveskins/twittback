@@ -12,3 +12,8 @@ def read_config():
 def get_auth():
     config = read_config()
     return config["auth"]
+
+
+def get_db_path():
+    config = read_config()
+    return config["db"]["path"]

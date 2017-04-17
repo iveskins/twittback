@@ -33,7 +33,6 @@ def test_get_date_range(tweet_factory, repository):
     tweet_3 = tweet_factory.make_tweet(3, "three", timestamp=1600)
     repository.add([tweet_1, tweet_2, tweet_3])
 
-
     assert repository.date_range() == (1400, 1600)
 
 
