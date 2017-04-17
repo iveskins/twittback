@@ -1,5 +1,6 @@
 import re
 
+import arrow
 import path
 
 from twittback import ui
@@ -47,10 +48,18 @@ def messages(request):
 
 class TweetFactory:
     def make_tweet(self, twitter_id, text, **kwargs):
+        fixed_kwargs = self.fix_kwargs(kwargs)
         ret = twittback.Tweet(
             twitter_id=twitter_id, text=text,
-            **kwargs)
+            **fixed_kwargs)
         return ret
+
+    @classmethod
+    def fix_kwargs(cls, kwargs):
+        date = kwargs.pop("date", None)
+        if date:
+            kwargs["timestamp"] = arrow.get(date).timestamp
+        return kwargs
 
 
 @pytest.fixture()

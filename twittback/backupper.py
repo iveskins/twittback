@@ -2,12 +2,12 @@ from twittback import ui
 
 
 class Backupper:
-    def __init__(self, *, client, storage):
+    def __init__(self, *, client, repository):
         self.client = client
-        self.storage = storage
+        self.repository = repository
 
     def yield_latest_tweets(self):
-        latest_tweet = self.storage.latest_tweet()
+        latest_tweet = self.repository.latest_tweet()
         ui.info("Feching latest tweets", ui.ellipsis)
         tweets = self.client.get_latest_tweets()
         for tweet in tweets:
@@ -18,7 +18,7 @@ class Backupper:
     def backup(self):
         latest_tweets = self.yield_latest_tweets()
         to_add = list(latest_tweets)
-        self.storage.add(reversed(to_add))
+        self.repository.add(reversed(to_add))
         if to_add:
             ui.info("Stored", len(to_add), "new tweet(s)", ui.check)
         else:
@@ -27,11 +27,11 @@ class Backupper:
 
 def main():
     import twittback.client.twitter_client
-    import twittback.storage
+    import twittback.repository
 
     client = twittback.client.twitter_client.get_twitter_client()
-    storage = twittback.storage.get_sql_storage()
-    backupper = Backupper(client=client, storage=storage)
+    repository = twittback.repository.get_sql_repository()
+    backupper = Backupper(client=client, repository=repository)
     backupper.backup()
 
 

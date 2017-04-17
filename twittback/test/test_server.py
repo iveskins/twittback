@@ -1,2 +1,4 @@
 def test_index(client):
-    assert client.get("/").status_code == 200
+    response = client.get("/")
+    assert response.status_code == 200
+    assert b"Twittback" in response.data

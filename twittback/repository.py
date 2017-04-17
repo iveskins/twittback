@@ -6,7 +6,7 @@ import twittback
 import twittback.config
 
 
-class Storage(metaclass=abc.ABCMeta):
+class Repository(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def all_tweets(self) -> TweetSequence:
         pass
@@ -20,7 +20,7 @@ class Storage(metaclass=abc.ABCMeta):
         pass
 
 
-class InMemoryStorage(Storage):
+class InMemoryRepository(Repository):
     def __init__(self):
         self.tweets = list()
 
@@ -36,7 +36,7 @@ class InMemoryStorage(Storage):
         return self.tweets[-1]
 
 
-class SQLStorage(Storage):
+class SQLRepository(Repository):
     def __init__(self, db_path):
         self.connection = sqlite3.connect(db_path)
         self.connection.row_factory = sqlite3.Row
@@ -99,7 +99,7 @@ class SQLStorage(Storage):
         return (tweet.twitter_id, tweet.text, tweet.timestamp)
 
 
-def get_sql_storage():
+def get_sql_repository():
     config = twittback.config.read_config()
     db_path = config["db"]["path"]
-    return SQLStorage(db_path)
+    return SQLRepository(db_path)
