@@ -33,6 +33,8 @@ class InMemoryStorage(Storage):
         return self.tweets
 
     def latest_tweet(self):
+        if not self.tweets:
+            return None
         return self.tweets[-1]
 
 
@@ -73,7 +75,10 @@ class SQLStorage(Storage):
         cursor = self.db.cursor()
         cursor.execute(sql)
         res = cursor.fetchone()
-        return self.from_row(res)
+        if res:
+            return self.from_row(res)
+        else:
+            return None
 
     def all_tweets(self):
         sql = """
@@ -94,3 +99,9 @@ class SQLStorage(Storage):
     @classmethod
     def to_row(cls, tweet):
         return (tweet.twitter_id, tweet.text, tweet.timestamp)
+
+
+def get_sql_storage():
+    config = twittback.config.read_config()
+    db_path = config["db"]["path"]
+    return SQLStorage(db_path)

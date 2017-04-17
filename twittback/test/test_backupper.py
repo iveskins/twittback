@@ -28,3 +28,15 @@ def test_backup_new_tweets(tweet_factory):
     assert list(storage.all_tweets()) == [
         tweet_1, tweet_2, tweet_3, tweet_4
     ]
+
+
+def test_first_backup(tweet_factory):
+    tweet_1 = tweet_factory.make_tweet(1, "one")
+    tweet_2 = tweet_factory.make_tweet(2, "two")
+    storage = twittback.storage.InMemoryStorage()
+    client = twittback.client.FakeClient()
+    client.timeline = [tweet_2, tweet_1]
+    backupper = twittback.backupper.Backupper(storage=storage,
+                                              client=client)
+    backupper.backup()
+    assert list(storage.all_tweets()) == [tweet_1, tweet_2]

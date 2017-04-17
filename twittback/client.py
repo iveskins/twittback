@@ -1,6 +1,7 @@
 import abc
 import typing
 
+import arrow
 import twitter
 
 import twittback.config
@@ -34,7 +35,11 @@ class TwitterClient(Client):
     def to_tweet(cls, json_data):
         twitter_id = json_data["id"]
         text = json_data["text"]
-        return twittback.Tweet(twitter_id=twitter_id, text=text)
+        created_at = json_data['created_at']
+        date = arrow.Arrow.strptime(created_at, "%a %b %d %H:%M:%S %z %Y")
+        timestamp = date.timestamp
+        return twittback.Tweet(twitter_id=twitter_id, text=text,
+                               timestamp=timestamp)
 
 
 class FakeClient(Client):
@@ -45,9 +50,13 @@ class FakeClient(Client):
         return self.timeline
 
 
-def main():
+def get_twitter_client():
     config = twittback.config.read_config()
     client = TwitterClient(config)
+    return client
+
+def main():
+    client = get_twitter_client()
     latest_tweets = client.get_latest_tweets()
     for tweet in latest_tweets:
         print(tweet)
