@@ -1,8 +1,0 @@
-#!/bin/bash -e
-
-if [[ ! -t 1 ]] ; then
-  echo "stdin is not a tty, skipping"
-  exit 0
-fi
-
-tox -e style,lint,test

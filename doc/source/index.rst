@@ -1,8 +1,0 @@
-twittback
-=========
-
-Installation
-------------
-
-Usage
------
