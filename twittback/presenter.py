@@ -20,15 +20,26 @@ class HTMLPresenter:
             self.renderer = JinjaRenderer()
 
     def gen_index(self, start_timestamp, end_timestamp):
+        dates = self.collect_dates(start_timestamp, end_timestamp)
+        year_groups = self.group_dates_by_year(dates)
+        context = dict()
+        context["year_groups"] = year_groups
+        return self.renderer.render("index.html", context)
+
+    @classmethod
+    def collect_dates(cls, start_timestamp, end_timestamp):
+        start_date = arrow.get(start_timestamp)
+        end_date = arrow.get(end_timestamp)
         dates = list()
-        date = arrow.get(start_timestamp)
+        date = start_date
         while date <= arrow.get(end_timestamp):
             dates.append(date)
             date = date.shift(months=1)
-        context = dict()
+        return dates
 
+    @classmethod
+    def group_dates_by_year(cls, dates):
         year_groups = list()
-
         def key(date):
             return date.year
 
@@ -36,8 +47,7 @@ class HTMLPresenter:
             month_names = [get_month_name(x.month) for x in group]
             year_groups.append((str(year), month_names))
 
-        context["year_groups"] = year_groups
-        return self.renderer.render("index.html", context)
+        return year_groups
 
 
 class JinjaRenderer(Renderer):
