@@ -1,4 +1,5 @@
-requests==2.12.4
-path.py==9.0.1
 flask==0.12.1
+path.py==9.0.1
+ruamel.yaml==0.14.6
+requests==2.12.4
 twitter==1.17.1
