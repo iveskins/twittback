@@ -2,19 +2,18 @@ import argparse
 import path
 import json
 
-import twittback.client
+import twittback.client.twitter_client
 import twittback.storage
 
 
 def import_tweets(base_path, storage):
     for json_path in base_path.files("*.json"):
         parsed_json = json.loads(json_path.text())
-        storage.add(from_json(parsed_json))
-
-
-def from_json(parsed_json):
-    for json_data in parsed_json:
-        yield twittback.client.TwitterClient.from_json(json_data)
+        tweets = [
+            twittback.client.twitter_client.from_json(x) \
+                for x in parsed_json
+        ]
+        storage.add(tweets)
 
 
 def main():

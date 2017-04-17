@@ -1,6 +1,6 @@
 import twittback
 import twittback.backupper
-import twittback.client
+import twittback.client.fake_client
 import twittback.storage
 
 import pytest
@@ -18,7 +18,7 @@ def test_backup_new_tweets(tweet_factory):
 
     storage = twittback.storage.InMemoryStorage()
     storage.add([tweet_1, tweet_2])
-    client = twittback.client.FakeClient()
+    client = twittback.client.fake_client.FakeClient()
     client.timeline = [
         tweet_4, tweet_3, tweet_2, tweet_1
     ]
@@ -34,7 +34,7 @@ def test_first_backup(tweet_factory):
     tweet_1 = tweet_factory.make_tweet(1, "one")
     tweet_2 = tweet_factory.make_tweet(2, "two")
     storage = twittback.storage.InMemoryStorage()
-    client = twittback.client.FakeClient()
+    client = twittback.client.fake_client.FakeClient()
     client.timeline = [tweet_2, tweet_1]
     backupper = twittback.backupper.Backupper(storage=storage,
                                               client=client)

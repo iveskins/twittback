@@ -3,9 +3,8 @@ import typing
 import sqlite3
 
 import twittback
-
-# pylint: disable=invalid-name
-TweetSequence = typing.Sequence[twittback.Tweet]
+from twittback.types import TweetSequence
+import twittback.config
 
 
 class Storage(metaclass=abc.ABCMeta):
