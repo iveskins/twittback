@@ -65,3 +65,8 @@ class TweetFactory:
 @pytest.fixture()
 def tweet_factory():
     return TweetFactory()
+
+
+@pytest.fixture()
+def repository():
+    return twittback.repository.Repository(":memory:")

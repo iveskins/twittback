@@ -30,7 +30,7 @@ def main():
     import twittback.repository
 
     client = twittback.client.twitter_client.get_twitter_client()
-    repository = twittback.repository.get_sql_repository()
+    repository = twittback.repository.get_repository()
     backupper = Backupper(client=client, repository=repository)
     backupper.backup()
 

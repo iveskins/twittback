@@ -17,7 +17,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("json_path", type=path.Path)
     args = parser.parse_args()
-    repository = twittback.repository.get_sql_repository()
+    repository = twittback.repository.get_repository()
     import_tweets(args.json_path, repository)
 
 
