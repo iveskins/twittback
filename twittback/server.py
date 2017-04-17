@@ -8,7 +8,6 @@ import twittback.repository
 # pylint: disable=invalid-name
 app = flask.Flask("twittback")
 
-
 @app.route("/")
 def index():
     return "Twittback"
