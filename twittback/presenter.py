@@ -8,7 +8,7 @@ import jinja2
 class Renderer(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def render(self, template_name: str, **context) -> str:
+    def render(self, template_name: str, context: dict) -> str:
         pass
 
 
@@ -32,7 +32,7 @@ class HTMLPresenter:
         end_date = arrow.get(end_timestamp)
         dates = list()
         date = start_date
-        while date <= arrow.get(end_timestamp):
+        while date <= end_date:
             dates.append(date)
             date = date.shift(months=1)
         return dates
@@ -40,6 +40,7 @@ class HTMLPresenter:
     @classmethod
     def group_dates_by_year(cls, dates):
         year_groups = list()
+
         def key(date):
             return date.year
 
@@ -84,7 +85,7 @@ def main():
         ("2017", ("10", "11", "12")),
         ("2018", ("01", "02")),
     ]
-    out = renderer.render("index.html", {"year_groups" : year_groups})
+    out = renderer.render("index.html", {"year_groups": year_groups})
     print(out)
 
 

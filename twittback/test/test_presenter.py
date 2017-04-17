@@ -21,7 +21,7 @@ def test_index(presenter):
         ("2017", ["October", "November", "December"]),
         ("2018", ["January", "February"]),
     ]
-    expected_context = { "year_groups" : year_groups }
+    expected_context = {"year_groups": year_groups}
     assert presenter.renderer.calls == [
         ("index.html", expected_context),
     ]
