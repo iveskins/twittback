@@ -24,6 +24,6 @@ setup(name="twittback",
       ],
       entry_points={
         "console_scripts": [
-          "twittback-server = twittback.server:main",
+          "twittback = twittback.backupper:main",
         ]
       })
