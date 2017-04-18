@@ -52,7 +52,6 @@ class HTMLPresenter:
             year_groups.append((str(year), months_list))
         return year_groups
 
-
     @classmethod
     def get_month_name(cls, month_index):
         date = arrow.Arrow(year=2000, day=1, month=month_index)
@@ -62,7 +61,6 @@ class HTMLPresenter:
     def get_month_number(cls, month_index):
         date = arrow.Arrow(year=2000, day=1, month=month_index)
         return date.strftime("%m")
-
 
 
 class JinjaRenderer(Renderer):
@@ -81,7 +79,6 @@ class FakeRenderer(Renderer):
 
     def render(self, template_name, context):
         self.calls.append((template_name, context))
-
 
 
 def main():

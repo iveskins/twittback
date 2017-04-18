@@ -43,8 +43,6 @@ def show_by_month(year, month):
     tweets_for_month = repository.tweets_for_month(year, month)
     return app.html_presenter.by_month(year, month, tweets_for_month)
 
-    return f"Tweets for {year} {month}"
-
 
 def setup():
     app_config = twittback.config.read_config()
