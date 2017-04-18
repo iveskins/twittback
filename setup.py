@@ -16,6 +16,7 @@ setup(name="twittback",
       install_requires=[
         "attrs",
         "arrow",
+        "flask",
         "path.py",
         "requests",
         "ruamel.yaml",
