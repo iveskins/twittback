@@ -19,5 +19,4 @@ def test_when_browsing_index(app, browser):
     assert "Welcome to TwittBack" in browser.page
     print(browser.page)
     link = browser.html_soup.find("a", text="July")
-    assert link
-    #  assert browser.open(link)
+    browser.clink_link(link)

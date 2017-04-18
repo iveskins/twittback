@@ -26,6 +26,13 @@ class HTMLPresenter:
         context["year_groups"] = year_groups
         return self.renderer.render("index.html", context)
 
+    def by_month(self, year, month_index, tweets):
+        context = dict()
+        context["year"] = year
+        context["mounth_name"] = self.get_month_name(month_index)
+        context["tweets"] = tweets
+        return self.renderer.render("by_month.html", context)
+
     @classmethod
     def collect_dates(cls, start_timestamp, end_timestamp):
         start_date = arrow.get(start_timestamp)
@@ -33,17 +40,29 @@ class HTMLPresenter:
         date = start_date.floor("month")
         dates = list()
         while date <= end_date.floor("month"):
-            dates.append((date.year, date.month))
+            dates.append(date)
             date = date.shift(months=+1)
         return dates
 
     @classmethod
     def group_dates_by_year(cls, dates):
         year_groups = list()
-        for year, group in itertools.groupby(dates, lambda x: x[0]):
-            month_names = [get_month_name(x[1]) for x in group]
-            year_groups.append((str(year), month_names))
+        for year, group in itertools.groupby(dates, lambda x: x.year):
+            months_list = [(x.strftime("%m"), x.strftime("%B")) for x in group]
+            year_groups.append((str(year), months_list))
         return year_groups
+
+
+    @classmethod
+    def get_month_name(cls, month_index):
+        date = arrow.Arrow(year=2000, day=1, month=month_index)
+        return date.strftime("%B")
+
+    @classmethod
+    def get_month_number(cls, month_index):
+        date = arrow.Arrow(year=2000, day=1, month=month_index)
+        return date.strftime("%m")
+
 
 
 class JinjaRenderer(Renderer):
@@ -63,15 +82,6 @@ class FakeRenderer(Renderer):
     def render(self, template_name, context):
         self.calls.append((template_name, context))
 
-
-def get_month_name(month_number):
-    """
-    >>> get_month_short_name(4)
-    'April'
-
-    """
-    date = arrow.Arrow(year=2000, day=1, month=month_number)
-    return date.strftime("%B")
 
 
 def main():

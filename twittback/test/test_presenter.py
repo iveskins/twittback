@@ -18,8 +18,8 @@ def test_index(presenter):
     presenter.gen_index(start_timestamp, end_timestamp)
 
     year_groups = [
-        ("2017", ["October", "November", "December"]),
-        ("2018", ["January", "February"]),
+        ("2017", [("10", "October"), ("11", "November"), ("12", "December")]),
+        ("2018", [("01", "January"), ("02", "February")]),
     ]
     expected_context = {"year_groups": year_groups}
     assert presenter.renderer.calls == [

@@ -9,7 +9,9 @@
     <p>
     <ul>
     {% for month in months %}
-    <li><a href="/timeline/me/{{ year }}/{{ month }}">{{ month }}</a></li>
+    {% set month_number = month[0] %}
+    {% set month_name = month[1] %}
+    <li><a href="/home/timeline/{{ year }}/{{ month_number }}">{{ month_name }}</a></li>
     {% endfor %}
     </ul>
     </p>

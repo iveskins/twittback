@@ -1,0 +1,8 @@
+<h2> {{ month_name }} {{ year }}</h2>
+
+{% for tweet in tweets %}
+<h3>{{ tweet.human_date }}</h3>
+
+{{ tweet.text }}
+
+{% endfor %}

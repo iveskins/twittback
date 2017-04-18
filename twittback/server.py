@@ -37,6 +37,15 @@ def favicon():
     return app.send_static_file("favicon.ico")
 
 
+@app.route("/home/timeline/<int:year>/<int:month>")
+def show_by_month(year, month):
+    repository = app.get_repository()
+    tweets_for_month = repository.tweets_for_month(year, month)
+    return app.html_presenter.by_month(year, month, tweets_for_month)
+
+    return f"Tweets for {year} {month}"
+
+
 def setup():
     app_config = twittback.config.read_config()
     server_config = app_config["server"]
