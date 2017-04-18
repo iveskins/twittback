@@ -43,6 +43,7 @@ def show_by_month(year, month):
     tweets_for_month = repository.tweets_for_month(year, month)
     return app.html_presenter.by_month(year, month, tweets_for_month)
 
+
 @app.route("/search")
 def search():
     pattern = flask.request.args.get("pattern")
@@ -52,9 +53,9 @@ def search():
         return render_search_form(app)
 
 
-def perform_search(app, pattern):
+def perform_search(flask_app, pattern):
     max_search_results = 100
-    repository = app.get_repository()
+    repository = flask_app.get_repository()
     tweets = list(repository.search(pattern))
     error = None
     if len(tweets) >= max_search_results:
@@ -62,12 +63,12 @@ def perform_search(app, pattern):
             pattern, max_search_results)
     if not tweets:
         error = "No results found for '%s'" % pattern
-    presenter = app.html_presenter
+    presenter = flask_app.html_presenter
     return presenter.search_results(pattern, tweets, error=error)
 
 
-def render_search_form(app):
-    return app.html_presenter.search_form()
+def render_search_form(flask_app):
+    return flask_app.html_presenter.search_form()
 
 
 def setup():
