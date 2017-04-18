@@ -79,9 +79,12 @@ class JinjaRenderer(Renderer):
     def __init__(self):
         loader = jinja2.PackageLoader("twittback", "templates")
         self.env = jinja2.Environment(loader=loader)
+        config = twittback.config.read_config()
+        self.url_prefix = config["server"].get("application_root", "")
 
     def render(self, template_name, context):
         template = self.env.get_template(template_name)
+        context["url_prefix"] = self.url_prefix
         return template.render(context)
 
 
