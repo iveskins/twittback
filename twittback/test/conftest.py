@@ -43,7 +43,7 @@ class Browser():
     def open(self, url, allow_bad_status=False):
         response = self._flask_client.get(url)
         if not allow_bad_status:
-             assert 200 <= response.status_code < 400
+            assert 200 <= response.status_code < 400
         self.page = response.data.decode()
 
     @property
@@ -58,6 +58,7 @@ class Browser():
 @pytest.fixture()
 def browser(client):
     return Browser(client)
+
 
 @pytest.fixture()
 def tweet_factory():
