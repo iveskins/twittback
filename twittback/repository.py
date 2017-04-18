@@ -125,7 +125,7 @@ class Repository:
         yield from cursor.fetchall()
 
     def __str__(self):
-        return f"<Repository in {self.db_path}>"
+        return "<Repository in %s>" % self.db_path
 
 
 def get_repository():

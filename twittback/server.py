@@ -58,9 +58,10 @@ def perform_search(app, pattern):
     tweets = list(repository.search(pattern))
     error = None
     if len(tweets) >= max_search_results:
-        error = f"Your search for '{pattern}' yielded more than {max_search_results} results"
+        error = "Your search for '%s' yielded more than %d results" % (
+            pattern, max_search_results)
     if not tweets:
-        error = f"No results found for '{pattern}'"
+        error = "No results found for '%s'" % pattern
     presenter = app.html_presenter
     return presenter.search_results(pattern, tweets, error=error)
 
