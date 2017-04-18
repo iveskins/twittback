@@ -30,24 +30,19 @@ class HTMLPresenter:
     def collect_dates(cls, start_timestamp, end_timestamp):
         start_date = arrow.get(start_timestamp)
         end_date = arrow.get(end_timestamp)
+        date = start_date.floor("month")
         dates = list()
-        date = start_date
-        while date <= end_date:
-            dates.append(date)
-            date = date.shift(months=1)
+        while date <= end_date.floor("month"):
+            dates.append((date.year, date.month))
+            date = date.shift(months=+1)
         return dates
 
     @classmethod
     def group_dates_by_year(cls, dates):
         year_groups = list()
-
-        def key(date):
-            return date.year
-
-        for year, group in itertools.groupby(dates, key):
-            month_names = [get_month_name(x.month) for x in group]
+        for year, group in itertools.groupby(dates, lambda x: x[0]):
+            month_names = [get_month_name(x[1]) for x in group]
             year_groups.append((str(year), month_names))
-
         return year_groups
 
 
