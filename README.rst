@@ -6,4 +6,4 @@ Alternative twitter experience
 Screenshot
 ----------
 
-![screenshot](screeshot.png)
+![screenshot](https://github.com/dmerejkowsky/twittback/blob/master/screenshot.png?raw=true)
