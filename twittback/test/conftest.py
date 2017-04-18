@@ -50,9 +50,10 @@ class Browser():
     def html_soup(self):
         return bs4.BeautifulSoup(self.page, "html.parser")
 
-    def clink_link(self, link_id):
-        link = self.soup.find("a", id=link_id)
-        self._flask_client.get(link.attributes["href"])
+    def clink_link(self, link):
+        assert link is not None
+        href = link.attrs["href"]
+        self.open(href)
 
 
 @pytest.fixture()
