@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}TwittBack{% endblock %}
+{% block content %}
+{% if error %}
+
+<h2> Error </h2>
+
+<p>
+{{ error }}
+</p>
+
+{% else %}
+
+<h2>Search results for '{{ pattern }}'</h2>
+
+{% for tweet in tweets %}
+{% include "tweet.html" %}
+{% endfor %}
+
+{% endif %}
+{% endblock %}
