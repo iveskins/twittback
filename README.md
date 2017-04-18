@@ -1,7 +1,7 @@
 Twittback
 =========
 
-Alternative twitter experience
+Nice and user-friendly backup of your twitter timeline
 
 
 # Features
