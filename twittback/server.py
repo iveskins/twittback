@@ -37,7 +37,7 @@ def favicon():
     return app.send_static_file("favicon.ico")
 
 
-@app.route("/home/timeline/<int:year>/<int:month>")
+@app.route("/timeline/<int:year>/<int:month>")
 def show_by_month(year, month):
     repository = app.get_repository()
     tweets_for_month = repository.tweets_for_month(year, month)

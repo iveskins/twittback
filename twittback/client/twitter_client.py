@@ -35,13 +35,13 @@ class TwitterClient(twittback.client.Client):
 def from_json(json_data):
     twitter_id = json_data["id"]
     text = json_data["text"]
-    markdown = to_markdown(text, json_data)
+    fixed_text = fix_text(text, json_data)
     timestamp = to_timestamp(json_data["created_at"])
-    return twittback.Tweet(twitter_id=twitter_id, text=markdown,
+    return twittback.Tweet(twitter_id=twitter_id, text=fixed_text,
                            timestamp=timestamp)
 
 
-def to_markdown(tweet_text, metadata):
+def fix_text(tweet_text, metadata):
     replacements = dict()
     entities = metadata["entities"]
     for start, end, replacement in process_urls(entities):
@@ -49,7 +49,7 @@ def to_markdown(tweet_text, metadata):
     for start, end, replacement in process_medias(entities):
         replacements[start] = (end, replacement)
     replaced_text = perform_replaces(tweet_text, replacements)
-    return html.unescape(replaced_text)
+    return replaced_text
 
 
 def perform_replaces(text, replacements):
@@ -83,12 +83,12 @@ def process_medias(entities):
 def replacement_for_url(url):
     expanded_url = url["expanded_url"]
     display_url = url["display_url"]
-    return "[%s](%s)" % (display_url, expanded_url)
+    return '<a href="%s">%s</a>' % (expanded_url, display_url)
 
 
 def replacement_for_media(media):
     media_url = media["media_url_https"]
-    return "![image](%s)" % (media_url)
+    return '<a href="%s">see image</a>' % (media_url)
 
 
 def to_timestamp(created_at_str):

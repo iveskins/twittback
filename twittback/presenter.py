@@ -1,9 +1,12 @@
 import abc
+import html
 import itertools
 
 import arrow
 import jinja2
+import markdown
 
+import twittback
 
 class Renderer(metaclass=abc.ABCMeta):
 
@@ -29,8 +32,8 @@ class HTMLPresenter:
     def by_month(self, year, month_index, tweets):
         context = dict()
         context["year"] = year
-        context["mounth_name"] = self.get_month_name(month_index)
-        context["tweets"] = tweets
+        context["month_name"] = self.get_month_name(month_index)
+        context["tweets"] = [HTMLTweet.from_tweet(t) for t in tweets]
         return self.renderer.render("by_month.html", context)
 
     @classmethod
@@ -81,15 +84,18 @@ class FakeRenderer(Renderer):
         self.calls.append((template_name, context))
 
 
-def main():
-    renderer = JinjaRenderer()
-    year_groups = [
-        ("2017", ("10", "11", "12")),
-        ("2018", ("01", "02")),
-    ]
-    out = renderer.render("index.html", {"year_groups": year_groups})
-    print(out)
+class HTMLTweet(twittback.Tweet):
 
+    @property
+    def human_date(self):
+        date = arrow.get(self.timestamp)
+        return date.strftime("%Y %a %B %d %H:%m")
 
-if __name__ == "__main__":
-    main()
+    def to_html(self):
+        return self.text
+
+    @classmethod
+    def from_tweet(cls, tweet):
+        # We need to call HTMLTweet.__init__() with
+        # the required **kwargs:
+        return cls(**vars(tweet))
