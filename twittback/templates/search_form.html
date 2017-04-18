@@ -2,7 +2,7 @@
 {% block title %}TwittBack{% endblock %}
 {% block content %}
 <h2> Search </h2>
-<form name="search" action="/search" method="get" >
+<form name="search" action="{{ url_prefix }}/search" method="get" >
   <input type="text" name="pattern">
   <input type="submit" value="Submit" />
 </form>
