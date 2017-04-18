@@ -1,12 +1,11 @@
 import abc
-import html
 import itertools
 
 import arrow
 import jinja2
-import markdown
 
 import twittback
+
 
 class Renderer(metaclass=abc.ABCMeta):
 

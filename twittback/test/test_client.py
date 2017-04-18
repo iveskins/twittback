@@ -64,22 +64,14 @@ with_escaped_html = """
 def test_fix_urls():
     json_data = json.loads(with_urls)
     text = json_data["text"]
-    markdown = twittback.client.twitter_client.to_markdown(text, json_data)
-    assert markdown == """New link added to [dmerej.info/blog/pages/lin…](https://dmerej.info/blog/pages/links/)
-12 Signs You’re Working in a Feature Factory: [hackernoon.com/12-signs-youre…](https://hackernoon.com/12-signs-youre-working-in-a-feature-factory-44a5b938d6a2)"""
+    fixed_text = twittback.client.twitter_client.fix_text(text, json_data)
+    assert fixed_text == """New link added to <a href="https://dmerej.info/blog/pages/links/">dmerej.info/blog/pages/lin…</a>
+12 Signs You’re Working in a Feature Factory: <a href="https://hackernoon.com/12-signs-youre-working-in-a-feature-factory-44a5b938d6a2">hackernoon.com/12-signs-youre…</a>"""
 
 
 def test_fix_media():
     json_data = json.loads(with_image)
     text = json_data["text"]
-    markdown = twittback.client.twitter_client.to_markdown(text, json_data)
-    assert markdown == """Is #XKCD's CSS broken or is it just me ?
-(Using firefox 47.0.1) ![image](https://pbs.twimg.com/media/Co4H3jYWEAAnzFg.jpg)"""
-
-
-
-def test_unescape_html():
-    json_data = json.loads(with_escaped_html)
-    text = json_data["text"]
-    markdown = twittback.client.twitter_client.to_markdown(text, json_data)
-    assert markdown == "Use git grep foo <branch> -- <path>"
+    fixed_text = twittback.client.twitter_client.fix_text(text, json_data)
+    assert fixed_text == """Is #XKCD's CSS broken or is it just me ?
+(Using firefox 47.0.1) <a href="https://pbs.twimg.com/media/Co4H3jYWEAAnzFg.jpg">see image</a>"""

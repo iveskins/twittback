@@ -1,5 +1,3 @@
-import html
-
 import arrow
 import twitter
 
