@@ -13,8 +13,11 @@ def init_repository(tweet_factory, repository, app):
     app.repository = repository
 
 
-def test_index(client):
-    response = client.get("/")
-    assert response.status_code == 200
-    data = response.data.decode()
-    assert "Welcome to TwittBack" in data
+def test_when_browsing_index(app, browser):
+    """ can click on the 'by month' links """
+    browser.open("/")
+    assert "Welcome to TwittBack" in browser.page
+    print(browser.page)
+    link = browser.html_soup.find("a", text="July")
+    assert link
+    #assert browser.open(link)

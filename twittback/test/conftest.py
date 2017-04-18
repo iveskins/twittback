@@ -1,6 +1,7 @@
 import re
 
 import arrow
+import bs4
 import path
 
 import twittback
@@ -34,6 +35,29 @@ class TweetFactory:
             kwargs["timestamp"] = arrow.get(date).timestamp
         return kwargs
 
+
+class Browser():
+    def __init__(self, flask_client):
+        self._flask_client = flask_client
+
+    def open(self, url, allow_bad_status=False):
+        response = self._flask_client.get(url)
+        if not allow_bad_status:
+             assert 200 <= response.status_code < 400
+        self.page = response.data.decode()
+
+    @property
+    def html_soup(self):
+        return bs4.BeautifulSoup(self.page, "html.parser")
+
+    def clink_link(self, link_id):
+        link = self.soup.find("a", id=link_id)
+        self._flask_client.get(link.attributes["href"])
+
+
+@pytest.fixture()
+def browser(client):
+    return Browser(client)
 
 @pytest.fixture()
 def tweet_factory():
