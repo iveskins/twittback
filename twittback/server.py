@@ -29,7 +29,7 @@ app = TwittBackFlaskApp()
 def index():
     repository = app.get_repository()
     start_timestamp, end_timestamp = repository.date_range()
-    return app.html_presenter.gen_index(start_timestamp, end_timestamp)
+    return app.html_presenter.index(start_timestamp, end_timestamp)
 
 
 @app.route("/favicon.ico")
@@ -42,6 +42,31 @@ def show_by_month(year, month):
     repository = app.get_repository()
     tweets_for_month = repository.tweets_for_month(year, month)
     return app.html_presenter.by_month(year, month, tweets_for_month)
+
+@app.route("/search")
+def search():
+    pattern = flask.request.args.get("pattern")
+    if pattern:
+        return perform_search(app, pattern)
+    else:
+        return render_search_form(app)
+
+
+def perform_search(app, pattern):
+    max_search_results = 100
+    repository = app.get_repository()
+    tweets = list(repository.search(pattern))
+    error = None
+    if len(tweets) >= max_search_results:
+        error = f"Your search for '{pattern}' yielded more than {max_search_results} results"
+    if not tweets:
+        error = f"No results found for '{pattern}'"
+    presenter = app.html_presenter
+    return presenter.search_results(pattern, tweets, error=error)
+
+
+def render_search_form(app):
+    return app.html_presenter.search_form()
 
 
 def setup():

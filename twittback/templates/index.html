@@ -1,4 +1,9 @@
+{% extends "base.html" %}
+{% block title %}TwittBack{% endblock %}
+{% block content %}
 <h1>Welcome to TwittBack</h1>
+
+<a href="/search">search</a>
 
 <h2>All tweets</h2>
 
@@ -16,3 +21,4 @@
     </ul>
     </p>
 {% endfor %}
+{% endblock %}

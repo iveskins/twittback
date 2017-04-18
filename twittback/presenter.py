@@ -21,7 +21,7 @@ class HTMLPresenter:
         else:
             self.renderer = JinjaRenderer()
 
-    def gen_index(self, start_timestamp, end_timestamp):
+    def index(self, start_timestamp, end_timestamp):
         dates = self.collect_dates(start_timestamp, end_timestamp)
         year_groups = self.group_dates_by_year(dates)
         context = dict()
@@ -34,6 +34,16 @@ class HTMLPresenter:
         context["month_name"] = self.get_month_name(month_index)
         context["tweets"] = [HTMLTweet.from_tweet(t) for t in tweets]
         return self.renderer.render("by_month.html", context)
+
+    def search_results(self, pattern, tweets, *, error=None):
+        context = dict()
+        context["pattern"] = pattern
+        context["error"] = error
+        context["tweets"] = [HTMLTweet.from_tweet(t) for t in tweets]
+        return self.renderer.render("search_results.html", context)
+
+    def search_form(self):
+        return self.renderer.render("search_form.html", dict())
 
     @classmethod
     def collect_dates(cls, start_timestamp, end_timestamp):

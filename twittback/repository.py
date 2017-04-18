@@ -58,9 +58,7 @@ class Repository:
             SELECT twitter_id, text, timestamp FROM tweets
                    ORDER BY twitter_id ASC
         """
-        cursor = self.connection.cursor()
-        cursor.execute(query)
-        for row in cursor.fetchall():
+        for row in self.query_many(query):
             yield self.from_row(row)
 
     def tweets_for_month(self, year, month_number):
@@ -72,10 +70,9 @@ class Repository:
                 WHERE (timestamp > ?) AND (timestamp < ?)
                 ORDER BY twitter_id ASC
         """
-
-        cursor = self.connection.cursor()
-        cursor.execute(query, (start_date.timestamp, end_date.timestamp))
-        for row in cursor.fetchall():
+        for row in self.query_many(query,
+                                   start_date.timestamp,
+                                   end_date.timestamp):
             yield self.from_row(row)
 
     def date_range(self):
@@ -92,6 +89,16 @@ class Repository:
         if not row:
             raise NoSuchId(twitter_id)
         return self.from_row(row)
+
+    def search(self, pattern):
+        full_pattern = "%" + pattern + "%"
+        query = """
+            SELECT twitter_id, text, timestamp FROM tweets
+                WHERE text MATCH ?
+                ORDER BY twitter_id ASC
+        """
+        for row in self.query_many(query, full_pattern):
+            yield self.from_row(row)
 
     @classmethod
     def from_row(cls, row):
@@ -111,6 +118,11 @@ class Repository:
             return res
         else:
             return None
+
+    def query_many(self, query, *args):
+        cursor = self.connection.cursor()
+        cursor.execute(query, args)
+        yield from cursor.fetchall()
 
     def __str__(self):
         return f"<Repository in {self.db_path}>"
