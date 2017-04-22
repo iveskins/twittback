@@ -3,7 +3,6 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def init_repository(tweet_factory, repository, app):
-    print("Init repository")
     tweet_1 = tweet_factory.make_tweet(1, "First tweet! ", date="2017-07-07")
     tweet_2 = tweet_factory.make_tweet(2, "Second tweet", date="2017-08-02")
     tweet_3 = tweet_factory.make_tweet(3, "Third tweet", date="2017-08-15")
