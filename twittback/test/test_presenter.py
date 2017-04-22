@@ -15,7 +15,7 @@ def test_index(presenter):
     start_timestamp = arrow.get("2017-10-01").timestamp
     end_timestamp = arrow.get("2018-02-02").timestamp
 
-    presenter.gen_index(start_timestamp, end_timestamp)
+    presenter.index(start_timestamp, end_timestamp)
 
     year_groups = [
         ("2017", [("10", "October"), ("11", "November"), ("12", "December")]),
