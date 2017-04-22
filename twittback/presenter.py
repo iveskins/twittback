@@ -4,9 +4,6 @@ import itertools
 import arrow
 import jinja2
 
-import twittback
-import twittback.feed
-
 
 class Renderer(metaclass=abc.ABCMeta):
 
@@ -113,7 +110,6 @@ class JinjaRenderer(Renderer):
         self.app = app
         loader = jinja2.PackageLoader("twittback", "templates")
         self.env = jinja2.Environment(loader=loader)
-        config = twittback.config.read_config()
 
     def render(self, template_name, context):
         template = self.env.get_template(template_name)

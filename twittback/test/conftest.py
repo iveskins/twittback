@@ -10,7 +10,6 @@ import twittback.flask_app
 import pytest
 
 
-
 @pytest.fixture
 def tmp_path(tmpdir):
     return path.Path(str(tmpdir))

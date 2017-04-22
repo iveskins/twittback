@@ -9,6 +9,7 @@ import twittback.presenter
 class Server():
     def __init__(self):
         self.app = None
+        self.port = None
         self.db_path = None
         self.presenter = None
         self._repository = None
@@ -76,11 +77,10 @@ def build_flask_app(config):
 def build_feed(config):
     site_url = config["site_url"]
     feed_url = "%s/feed.atom" % site_url
-    atom1_feed = Atom1Feed(
-    title="Twittback",
-    description="Latest tweets",
-    link=site_url,
-    feed_url=feed_url)
+    atom1_feed = Atom1Feed(title="Twittback",
+                           description="Latest tweets",
+                           link=site_url,
+                           feed_url=feed_url)
     return atom1_feed
 
 
@@ -101,7 +101,6 @@ def build_server():
     flask_app = build_flask_app(server_config)
     feed = build_feed(server_config)
     presenter = build_presenter(flask_app, feed)
-
 
     server = Server()
 
