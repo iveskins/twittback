@@ -16,12 +16,10 @@ class Renderer(metaclass=abc.ABCMeta):
 
 
 class Presenter:
-    def __init__(self, renderer=None, feed_generator=None):
-        if renderer:
-            self.renderer = renderer
-        else:
-            self.renderer = JinjaRenderer()
-        self.feed_generator = feed_generator
+    def __init__(self):
+        self.renderer = None
+        self.feed = None
+        self.app = None
 
     def index(self, start_timestamp, end_timestamp):
         dates = self.collect_dates(start_timestamp, end_timestamp)
@@ -30,21 +28,37 @@ class Presenter:
         context["year_groups"] = year_groups
         return self.renderer.render("index.html", context)
 
-    def feed(self, latest_tweets):
-        return self.feed_generator.gen_feed(latest_tweets)
+    def gen_feed(self, latest_tweets):
+        for tweet in latest_tweets:
+            self.add_tweet_to_feed(tweet)
+        return self.feed.writeString("utf-8")
+
+    def add_tweet_to_feed(self, tweet):
+        html_tweet = self.tweet_for_template(tweet)
+        date = html_tweet.date
+        permalink = html_tweet.permalink
+        entry_id = date
+        description = html_tweet.html
+        self.feed.add_item(
+            title=entry_id,
+            link=permalink,
+            description=description,
+            pubdate=date,
+            updated=date,
+        )
 
     def by_month(self, year, month_index, tweets):
         context = dict()
         context["year"] = year
         context["month_name"] = self.get_month_name(month_index)
-        context["tweets"] = [HTMLTweet.from_tweet(t) for t in tweets]
+        context["tweets"] = self.tweets_for_template(tweets)
         return self.renderer.render("by_month.html", context)
 
     def search_results(self, pattern, tweets, *, error=None):
         context = dict()
         context["pattern"] = pattern
         context["error"] = error
-        context["tweets"] = [HTMLTweet.from_tweet(t) for t in tweets]
+        context["tweets"] = self.tweets_for_template(tweets)
         return self.renderer.render("search_results.html", context)
 
     def search_form(self):
@@ -52,11 +66,17 @@ class Presenter:
 
     def view_tweet(self, tweet):
         context = dict()
-        context["tweet"] = HTMLTweet.from_tweet(tweet)
+        context["tweet"] = self.tweet_for_template(tweet)
         return self.renderer.render("view_tweet.html", context)
 
     def not_found(self):
         return self.renderer.render("not_found.html", dict())
+
+    def tweet_for_template(self, tweet):
+        return HTMLTweet(self.app, tweet)
+
+    def tweets_for_template(self, tweets):
+        return [self.tweet_for_template(t) for t in tweets]
 
     @classmethod
     def collect_dates(cls, start_timestamp, end_timestamp):
@@ -89,7 +109,8 @@ class Presenter:
 
 
 class JinjaRenderer(Renderer):
-    def __init__(self):
+    def __init__(self, app=None):
+        self.app = app
         loader = jinja2.PackageLoader("twittback", "templates")
         self.env = jinja2.Environment(loader=loader)
         config = twittback.config.read_config()
@@ -97,31 +118,27 @@ class JinjaRenderer(Renderer):
 
     def render(self, template_name, context):
         template = self.env.get_template(template_name)
-        context["url_prefix"] = self.url_prefix
+        context["app"] = self.app
         return template.render(context)
 
 
-class FakeRenderer(Renderer):
-    def __init__(self):
-        self.calls = list()
+class HTMLTweet():
+    def __init__(self, app, tweet):
+        self.app = app
+        self.tweet = tweet
 
-    def render(self, template_name, context):
-        self.calls.append((template_name, context))
-
-
-class HTMLTweet(twittback.Tweet):
+    @property
+    def date(self):
+        return arrow.get(self.tweet.timestamp)
 
     @property
     def human_date(self):
-        date = arrow.get(self.timestamp)
-        return date.strftime("%Y %a %B %d %H:%m")
-
-    @classmethod
-    def from_tweet(cls, tweet):
-        # We need to call HTMLTweet.__init__() with
-        # the required **kwargs:
-        return cls(**vars(tweet))
+        return self.date.strftime("%Y %a %B %d %H:%m")
 
     @property
     def html(self):
-        return "<pre>%s</pre>" % self.text
+        return "<pre>%s</pre>" % self.tweet.text
+
+    @property
+    def permalink(self):
+        return self.app.url_for("view_tweet", twitter_id=self.tweet.twitter_id)

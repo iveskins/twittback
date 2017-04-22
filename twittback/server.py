@@ -1,5 +1,4 @@
-""" twittback main Flask application """
-
+from feedgenerator import Atom1Feed
 import flask
 
 import twittback.config
@@ -7,107 +6,103 @@ import twittback.repository
 import twittback.presenter
 
 
-class TwittBackFlaskApp(flask.Flask):
-    repository = None
-
+class Server():
     def __init__(self):
-        super().__init__("twittback")
-        self.presenter = None
+        self.app = None
         self.db_path = None
+        self.repository = None
+        self.presenter = None
 
-    def get_repository(self):
-        if self.repository is None:
-            self.repository = twittback.repository.Repository(self.db_path)
-        return self.repository
+    def index(self):
+        start_timestamp, end_timestamp = self.repository.date_range()
+        return self.presenter.index(start_timestamp, end_timestamp)
 
+    def not_found(self):
+        return self.presenter.not_found()
 
-# pylint: disable=invalid-name
-app = TwittBackFlaskApp()
+    def favicon(self):
+        return self.app.send_static_file("favicon.ico")
 
+    def gen_feed(self):
+        latest_tweets = self.repository.latest_tweets()
+        return self.presenter.gen_feed(latest_tweets)
 
-@app.errorhandler(404)
-def not_found(error_unused):
-    return app.presenter.not_found()
+    def view_tweet(self, twitter_id):
+        try:
+            tweet = self.repository.get_by_id(twitter_id)
+        except twittback.repository.NoSuchId:
+            self.app.abort(404)
+        return self.presenter.view_tweet(tweet)
 
+    def timeline(self, year, month):
+        tweets_for_month = self.repository.tweets_for_month(year, month)
+        return self.presenter.by_month(year, month, tweets_for_month)
 
-@app.route("/")
-def index():
-    repository = app.get_repository()
-    start_timestamp, end_timestamp = repository.date_range()
-    return app.presenter.index(start_timestamp, end_timestamp)
+    def search(self, pattern):
+        max_search_results = 100
+        tweets = list(self.repository.search(pattern))
+        error = None
+        if len(tweets) >= max_search_results:
+            error = "Your search for '%s' yielded more than %d results" % (
+                pattern, max_search_results)
+        if not tweets:
+            error = "No results found for '%s'" % pattern
+        return self.presenter.search_results(pattern, tweets, error=error)
 
-
-@app.route("/favicon.ico")
-def favicon():
-    return app.send_static_file("favicon.ico")
-
-@app.route("/feed.atom")
-def atom_feed():
-    repository = app.get_repository()
-    latest_tweets = repository.latest_tweets()
-    return app.presenter.feed(latest_tweets)
-
-@app.route("/view/tweet/<int:twitter_id>")
-def view_tweet(twitter_id):
-    repository = app.get_repository()
-    try:
-        tweet = repository.get_by_id(twitter_id)
-    except twittback.repository.NoSuchId:
-        flask.abort(404)
-    return app.presenter.view_tweet(tweet)
-
-@app.route("/timeline/<int:year>/<int:month>")
-def show_by_month(year, month):
-    repository = app.get_repository()
-    tweets_for_month = repository.tweets_for_month(year, month)
-    return app.presenter.by_month(year, month, tweets_for_month)
+    def search_form(self):
+        return self.presenter.search_form()
 
 
-@app.route("/search")
-def search():
-    pattern = flask.request.args.get("pattern")
-    if pattern:
-        return perform_search(app, pattern)
-    else:
-        return render_search_form(app)
+def read_config():
+    return twittback.config.read_config()
 
 
-def perform_search(flask_app, pattern):
-    max_search_results = 100
-    repository = flask_app.get_repository()
-    tweets = list(repository.search(pattern))
-    error = None
-    if len(tweets) >= max_search_results:
-        error = "Your search for '%s' yielded more than %d results" % (
-            pattern, max_search_results)
-    if not tweets:
-        error = "No results found for '%s'" % pattern
-    presenter = flask_app.presenter
-    return presenter.search_results(pattern, tweets, error=error)
+def build_flask_app(config):
+    flask_app = flask.Flask("twittback")
+    flask_app.url_for = flask.url_for
+    flask_app.abort = flask.abort
+    flask_app.config["APPLICATION_ROOT"] = config.get("application_root")
+    flask_app.debug = config.get("debug", False)
+    flask_app.port = config["port"]
+    return flask_app
 
 
-def render_search_form(flask_app):
-    return flask_app.presenter.search_form()
+def build_feed(config):
+    site_url = config["site_url"]
+    feed_url = "%s/feed.atom" % site_url
+    atom1_feed = Atom1Feed(
+    title="Twittback",
+    description="Latest tweets",
+    link=site_url,
+    feed_url=feed_url)
+    return atom1_feed
 
 
-def setup():
-    app_config = twittback.config.read_config()
+def build_presenter(flask_app, feed):
+    presenter = twittback.presenter.Presenter()
+    presenter.app = flask_app
+    renderer = twittback.presenter.JinjaRenderer()
+    renderer.app = flask_app
+    presenter.renderer = renderer
+    presenter.feed = feed
+    return presenter
+
+
+def build_server():
+    app_config = read_config()
     server_config = app_config["server"]
-    app.config["APPLICATION_ROOT"] = server_config.get("application_root")
-    app.debug = server_config.get("debug", False)
-    feed_generator = twittback.feed.FeedGenerator(app_config)
-    app.presenter = twittback.presenter.Presenter(
-        feed_generator=feed_generator
-    )
-    # Can't open sqlite3 connection here, otherwise it complains
-    # about it being used in an other thread :/
-    app.db_path = twittback.config.get_db_path()
 
+    flask_app = build_flask_app(server_config)
+    feed = build_feed(server_config)
+    presenter = build_presenter(flask_app, feed)
 
-# needs to be done outside main for uwsgi to work :/
-setup()
+    db_path = app_config["db"]["path"]
+    repository = twittback.repository.Repository(db_path)
 
+    server = Server()
+    server.repository = repository
+    server.app = flask_app
+    server.presenter = presenter
+    server.port = server_config["port"]
 
-if __name__ == "__main__":
-    port = twittback.config.read_config()["server"]["port"]
-    app.run(port=port)
+    return server

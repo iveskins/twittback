@@ -5,14 +5,10 @@ import bs4
 import path
 
 import twittback
-import twittback.server
+import twittback.flask_app
 
 import pytest
 
-
-@pytest.fixture()
-def app():
-    return twittback.server.app
 
 
 @pytest.fixture
@@ -69,3 +65,10 @@ def tweet_factory():
 @pytest.fixture()
 def repository():
     return twittback.repository.Repository(":memory:")
+
+
+@pytest.fixture()
+def app(repository):
+    server = twittback.flask_app.server
+    server.repository = repository
+    return twittback.flask_app.app

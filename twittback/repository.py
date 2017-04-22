@@ -138,5 +138,5 @@ class Repository:
 
 
 def get_repository():
-    db_path = twittback.config.get_db_path()
-    return Repository(db_path)
+    config = twittback.config.read_config()
+    return Repository(config["db"]["path"])
