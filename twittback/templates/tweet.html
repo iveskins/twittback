@@ -1,7 +1,10 @@
-<h3>{{ tweet.human_date }}
-  <a href="{{ url_prefix }}/view/tweet/{{ tweet.twitter_id }}">
-  ¶
+<h3>
+  <a
+    class="permalink"
+    href="{{ url_prefix }}/view/tweet/{{ tweet.twitter_id }}">
+  🔗
   </a>
+  {{ tweet.human_date }}
 </h3>
 
 <pre>

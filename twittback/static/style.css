@@ -1,4 +1,3 @@
-/* Taken from ... */
 body {
   margin: 5% auto;
   background: #f2f2f2;
@@ -10,23 +9,9 @@ body {
   max-width: 73%;
 }
 
-code {
-  background: white;
-}
-
-p span.nickname {
-  font-style: oblique;
-}
-
-#social {
-  font-size: small;
-}
-
-
 a {
-  border-bottom: 1px solid #444444;
   color: #444444;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 a:hover {
@@ -35,4 +20,8 @@ a:hover {
 
 h1, h2 {
   line-height: 1.3;
+}
+
+a.permalink {
+  text-decoration: none;
 }
