@@ -5,6 +5,7 @@ import arrow
 import jinja2
 
 import twittback
+import twittback.feed
 
 
 class Renderer(metaclass=abc.ABCMeta):
@@ -15,11 +16,12 @@ class Renderer(metaclass=abc.ABCMeta):
 
 
 class Presenter:
-    def __init__(self, renderer=None):
+    def __init__(self, renderer=None, feed_generator=None):
         if renderer:
             self.renderer = renderer
         else:
             self.renderer = JinjaRenderer()
+        self.feed_generator = feed_generator
 
     def index(self, start_timestamp, end_timestamp):
         dates = self.collect_dates(start_timestamp, end_timestamp)
@@ -29,7 +31,7 @@ class Presenter:
         return self.renderer.render("index.html", context)
 
     def feed(self, latest_tweets):
-        pass
+        return self.feed_generator.gen_feed(latest_tweets)
 
     def by_month(self, year, month_index, tweets):
         context = dict()
@@ -114,11 +116,12 @@ class HTMLTweet(twittback.Tweet):
         date = arrow.get(self.timestamp)
         return date.strftime("%Y %a %B %d %H:%m")
 
-    def to_html(self):
-        return self.text
-
     @classmethod
     def from_tweet(cls, tweet):
         # We need to call HTMLTweet.__init__() with
         # the required **kwargs:
         return cls(**vars(tweet))
+
+    @property
+    def html(self):
+        return "<pre>%s</pre>" % self.text

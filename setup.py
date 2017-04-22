@@ -16,6 +16,7 @@ setup(name="twittback",
       install_requires=[
         "attrs",
         "arrow",
+        "feedgenerator",
         "flask",
         "path.py",
         "requests",

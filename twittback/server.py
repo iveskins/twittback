@@ -95,7 +95,10 @@ def setup():
     server_config = app_config["server"]
     app.config["APPLICATION_ROOT"] = server_config.get("application_root")
     app.debug = server_config.get("debug", False)
-    app.presenter = twittback.presenter.Presenter()
+    feed_generator = twittback.feed.FeedGenerator(app_config)
+    app.presenter = twittback.presenter.Presenter(
+        feed_generator=feed_generator
+    )
     # Can't open sqlite3 connection here, otherwise it complains
     # about it being used in an other thread :/
     app.db_path = twittback.config.get_db_path()
