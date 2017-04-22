@@ -2,8 +2,10 @@
 {% block title %}TwittBack{% endblock %}
 {% block content %}
 <h2> Search </h2>
-<form name="search" action="{{ app.url_for("search") }}" method="get" >
-  <input type="text" name="pattern">
+<form name="search"
+      action="{{ app.url_for("search") }}"
+      method="get" >
+  <input type="text" name="pattern" autofocus />
   <input type="submit" value="Submit" />
 </form>
 {% endblock %}
