@@ -53,6 +53,15 @@ class Repository:
         else:
             return None
 
+    def latest_tweets(self):
+        query = """
+            SELECT twitter_id, text, timestamp FROM tweets
+                   ORDER BY twitter_id DESC
+                   LIMIT 10
+        """
+        for row in self.query_many(query):
+            yield self.from_row(row)
+
     def all_tweets(self):
         query = """
             SELECT twitter_id, text, timestamp FROM tweets

@@ -28,6 +28,9 @@ class HTMLPresenter:
         context["year_groups"] = year_groups
         return self.renderer.render("index.html", context)
 
+    def feed(self, latest_tweets):
+        return "<xml />"
+
     def by_month(self, year, month_index, tweets):
         context = dict()
         context["year"] = year

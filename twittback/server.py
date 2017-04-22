@@ -41,6 +41,11 @@ def index():
 def favicon():
     return app.send_static_file("favicon.ico")
 
+@app.route("/feed.atom")
+def atom_feed():
+    repository = app.get_repository()
+    latest_tweets = repository.latest_tweets()
+    return app.presenter.feed(latest_tweets)
 
 @app.route("/view/tweet/<int:twitter_id>")
 def view_tweet(twitter_id):

@@ -31,6 +31,7 @@ def test_perform_search(browser):
 
 def test_view(browser):
     browser.open("/view/tweet/1")
+    assert "First tweet!" in browser.page
 
 
 def test_view_not_found(browser):
@@ -40,3 +41,4 @@ def test_view_not_found(browser):
 
 def test_feed(browser):
     browser.open("/feed.atom")
+    assert "Atom" in browser.page
