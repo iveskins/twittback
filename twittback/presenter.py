@@ -45,6 +45,11 @@ class HTMLPresenter:
     def search_form(self):
         return self.renderer.render("search_form.html", dict())
 
+    def view_tweet(self, tweet):
+        context = dict()
+        context["tweet"] = HTMLTweet.from_tweet(tweet)
+        return self.renderer.render("view_tweet.html", context)
+
     @classmethod
     def collect_dates(cls, start_timestamp, end_timestamp):
         start_date = arrow.get(start_timestamp)

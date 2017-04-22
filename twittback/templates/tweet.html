@@ -1,4 +1,8 @@
-<h3>{{ tweet.human_date }}</h3>
+<h3>{{ tweet.human_date }}
+  <a href="{{ url_prefix }}/view/tweet/{{ tweet.twitter_id }}">
+  ¶
+  </a>
+</h3>
 
 <pre>
 {{ tweet.to_html() }}

@@ -37,6 +37,15 @@ def favicon():
     return app.send_static_file("favicon.ico")
 
 
+@app.route("/view/tweet/<int:twitter_id>")
+def view_tweet(twitter_id):
+    repository = app.get_repository()
+    try:
+        tweet = repository.get_by_id(twitter_id)
+    except twitter.repository.NoSuchId:
+        flask.abort(404)
+    return app.html_presenter.view_tweet(tweet)
+
 @app.route("/timeline/<int:year>/<int:month>")
 def show_by_month(year, month):
     repository = app.get_repository()

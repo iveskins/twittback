@@ -27,3 +27,7 @@ def test_search_form(browser):
 def test_perform_search(browser):
     browser.open("/search?pattern=First")
     assert "First tweet!" in browser.page
+
+
+def test_view(browser):
+    browser.open("/view/tweet/1")
