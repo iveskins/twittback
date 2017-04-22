@@ -50,6 +50,9 @@ class HTMLPresenter:
         context["tweet"] = HTMLTweet.from_tweet(tweet)
         return self.renderer.render("view_tweet.html", context)
 
+    def not_found(self):
+        return self.renderer.render("not_found.html", dict())
+
     @classmethod
     def collect_dates(cls, start_timestamp, end_timestamp):
         start_date = arrow.get(start_timestamp)

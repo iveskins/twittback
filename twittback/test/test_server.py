@@ -31,3 +31,12 @@ def test_perform_search(browser):
 
 def test_view(browser):
     browser.open("/view/tweet/1")
+
+
+def test_view_not_found(browser):
+    browser.open("/view/tweet/42", allow_bad_status=True)
+    assert "Not Found" in browser.page
+
+
+def test_feed(browser):
+    browser.open("/feed.atom")

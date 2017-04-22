@@ -25,6 +25,11 @@ class TwittBackFlaskApp(flask.Flask):
 app = TwittBackFlaskApp()
 
 
+@app.errorhandler(404)
+def not_found(error_unused):
+    return app.presenter.not_found()
+
+
 @app.route("/")
 def index():
     repository = app.get_repository()
@@ -42,7 +47,7 @@ def view_tweet(twitter_id):
     repository = app.get_repository()
     try:
         tweet = repository.get_by_id(twitter_id)
-    except twitter.repository.NoSuchId:
+    except twittback.repository.NoSuchId:
         flask.abort(404)
     return app.presenter.view_tweet(tweet)
 
