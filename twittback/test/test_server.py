@@ -21,7 +21,7 @@ def test_when_browsing_index(browser):
     browser.clink_link(link)
 
 
-def test_serch_form(browser):
+def test_search_form(browser):
     browser.open("/search")
 
 
