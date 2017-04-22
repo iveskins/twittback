@@ -12,7 +12,7 @@ class TwittBackFlaskApp(flask.Flask):
 
     def __init__(self):
         super().__init__("twittback")
-        self.html_presenter = None
+        self.presenter = None
         self.db_path = None
 
     def get_repository(self):
@@ -29,7 +29,7 @@ app = TwittBackFlaskApp()
 def index():
     repository = app.get_repository()
     start_timestamp, end_timestamp = repository.date_range()
-    return app.html_presenter.index(start_timestamp, end_timestamp)
+    return app.presenter.index(start_timestamp, end_timestamp)
 
 
 @app.route("/favicon.ico")
@@ -44,13 +44,13 @@ def view_tweet(twitter_id):
         tweet = repository.get_by_id(twitter_id)
     except twitter.repository.NoSuchId:
         flask.abort(404)
-    return app.html_presenter.view_tweet(tweet)
+    return app.presenter.view_tweet(tweet)
 
 @app.route("/timeline/<int:year>/<int:month>")
 def show_by_month(year, month):
     repository = app.get_repository()
     tweets_for_month = repository.tweets_for_month(year, month)
-    return app.html_presenter.by_month(year, month, tweets_for_month)
+    return app.presenter.by_month(year, month, tweets_for_month)
 
 
 @app.route("/search")
@@ -72,12 +72,12 @@ def perform_search(flask_app, pattern):
             pattern, max_search_results)
     if not tweets:
         error = "No results found for '%s'" % pattern
-    presenter = flask_app.html_presenter
+    presenter = flask_app.presenter
     return presenter.search_results(pattern, tweets, error=error)
 
 
 def render_search_form(flask_app):
-    return flask_app.html_presenter.search_form()
+    return flask_app.presenter.search_form()
 
 
 def setup():
@@ -85,7 +85,7 @@ def setup():
     server_config = app_config["server"]
     app.config["APPLICATION_ROOT"] = server_config.get("application_root")
     app.debug = server_config.get("debug", False)
-    app.html_presenter = twittback.presenter.HTMLPresenter()
+    app.presenter = twittback.presenter.HTMLPresenter()
     # Can't open sqlite3 connection here, otherwise it complains
     # about it being used in an other thread :/
     app.db_path = twittback.config.get_db_path()
