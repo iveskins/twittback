@@ -11,6 +11,7 @@ Nice and user-friendly backup of your twitter timeline
 * Full-text search
 * Old school pagination
 * Chronological order
+* RSS feed
 * No javascript
 
 # Installation
