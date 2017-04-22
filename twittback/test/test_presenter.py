@@ -8,7 +8,7 @@ import pytest
 @pytest.fixture
 def presenter():
     renderer = twittback.presenter.FakeRenderer()
-    return twittback.presenter.HTMLPresenter(renderer=renderer)
+    return twittback.presenter.Presenter(renderer=renderer)
 
 
 def test_index(presenter):

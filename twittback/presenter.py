@@ -14,7 +14,7 @@ class Renderer(metaclass=abc.ABCMeta):
         pass
 
 
-class HTMLPresenter:
+class Presenter:
     def __init__(self, renderer=None):
         if renderer:
             self.renderer = renderer
@@ -29,7 +29,7 @@ class HTMLPresenter:
         return self.renderer.render("index.html", context)
 
     def feed(self, latest_tweets):
-        return "<xml />"
+        pass
 
     def by_month(self, year, month_index, tweets):
         context = dict()
