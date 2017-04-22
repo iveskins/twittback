@@ -5,13 +5,13 @@
 
 <h2>All tweets</h2>
 
-{% for group in year_groups %}
+{% for group in year_groups | reverse %}
     {% set year =  group[0] %}
     {% set months = group[1] %}
     <h3>{{ year }}</h3>
     <p>
     <ul>
-    {% for month in months %}
+    {% for month in months | reverse %}
     {% set month_number = month[0] %}
     {% set month_name = month[1] %}
     <li><a href="{{ app.url_for("timeline", year=year, month=month_number) }}">{{ month_name }}</a></li>
