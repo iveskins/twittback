@@ -10,8 +10,14 @@ class Server():
     def __init__(self):
         self.app = None
         self.db_path = None
-        self.repository = None
         self.presenter = None
+        self._repository = None
+
+    @property
+    def repository(self):
+        if not self._repository:
+            self._repository = twittback.repository.Repository(self.db_path)
+        return self._repository
 
     def index(self):
         start_timestamp, end_timestamp = self.repository.date_range()
@@ -96,11 +102,12 @@ def build_server():
     feed = build_feed(server_config)
     presenter = build_presenter(flask_app, feed)
 
-    db_path = app_config["db"]["path"]
-    repository = twittback.repository.Repository(db_path)
 
     server = Server()
-    server.repository = repository
+
+    db_path = app_config["db"]["path"]
+    server.db_path = db_path
+
     server.app = flask_app
     server.presenter = presenter
     server.port = server_config["port"]

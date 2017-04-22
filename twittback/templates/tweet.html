@@ -1,8 +1,7 @@
-url_for(index): {{ app.url_for("index") }}
 <h3>
   <a
     class="permalink"
-    href="{{ url_prefix }}/view/tweet/{{ tweet.twitter_id }}">
+    href="{{ tweet.permalink }}">
   🔗
   </a>
   {{ tweet.human_date }}

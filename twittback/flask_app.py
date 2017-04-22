@@ -27,7 +27,7 @@ def favicon():
 
 
 @app.route("/feed.atom")
-def gen_feed():
+def feed():
     return server.gen_feed()
 
 

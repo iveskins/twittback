@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
   <meta name="generator" value="twittback" />
-  <link rel="stylesheet" href="{{ url_prefix }}/static/style.css" />
-  <link rel="alternate" type="application/atom+xml"
-        title="Feed" href="{{ url_prefix }}/feed.atom" />
+  <link rel="stylesheet" href="{{ app.url_for("static", filename="style.css") }}" />
+  <link rel="alternate" type="application/atom+xml" title="Feed"
+        href="{{ app.url_for("feed") }}" />
   <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
 
 <div id="navigation" />
-  <a href="{{ url_prefix }}/">Home</a> |
-  <a href="{{ url_prefix }}/search">Search</a> |
-  <a href="{{ url_prefix }}/feed.atom">Subscribe</a>
+  <a href="{{ app.url_for("index") }}">Home</a> |
+  <a href="{{ app.url_for("search") }}">Search</a> |
+  <a href="{{ app.url_for("feed") }}">Subscribe</a>
 </div>
 
 {% block content %}
