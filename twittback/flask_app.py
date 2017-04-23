@@ -55,7 +55,5 @@ def search():
         return server.search_form()
 
 
-
-
 if __name__ == "__main__":
     app.run(port=server.port)

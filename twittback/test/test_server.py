@@ -43,7 +43,7 @@ def test_view_tweet_not_found(browser):
 def test_view_user(browser, john, alice, bob):
     browser.open("/view/user")
     assert john.name in browser.page
-    assert "List of followed users" in browser.page
+    assert "Following" in browser.page
     assert alice.name in browser.page
 
 

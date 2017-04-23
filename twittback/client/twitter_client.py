@@ -39,7 +39,6 @@ class TwitterClient(twittback.client.Client):
             yield user_from_json(followed_user)
 
 
-
 def user_from_json(json_data):
     return twittback.User(name=json_data["name"],
                           screen_name=json_data["screen_name"],

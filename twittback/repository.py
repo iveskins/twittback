@@ -160,7 +160,10 @@ class Repository:
                 user.description, user.location)
 
     def following(self):
-        query = "SELECT screen_name, name, description, location FROM following"
+        query = """
+            SELECT screen_name, name, description, location
+            FROM following
+        """
         rows = self.query_many(query)
         for row in rows:
             yield self.user_from_row(row)
