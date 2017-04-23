@@ -13,7 +13,7 @@ app = server.app
 @app.errorhandler(404)
 # pylint: disable=unused-argument
 def not_found(error):
-    return server.not_found()
+    return server.not_found(), 404
 
 
 @app.route("/")
