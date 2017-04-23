@@ -50,17 +50,6 @@ with_image = r"""
 }
 """
 
-with_escaped_html = """
-{
-  "entities": {
-    "urls": [],
-    "media": []
-  },
-  "text": "Use git grep foo &lt;branch&gt; -- &lt;path&gt;"
-}
-"""
-
-
 def test_fix_urls():
     json_data = json.loads(with_urls)
     text = json_data["text"]

@@ -20,6 +20,10 @@ class Server():
             self._repository = twittback.repository.Repository(self.db_path)
         return self._repository
 
+    @repository.setter
+    def repository(self, value):
+        self._repository = value
+
     def index(self):
         start_timestamp, end_timestamp = self.repository.date_range()
         return self.presenter.index(start_timestamp, end_timestamp)
