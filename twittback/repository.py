@@ -22,12 +22,19 @@ class Repository:
                 twitter_id INTEGER NOT NULL,
                 text VARCHAR(500) NOT NULL,
                 timestamp INTEGER NOT NULL
-                UNIQUE(twitter_id))
+                UNIQUE(twitter_id));
+            CREATE TABLE IF NOT EXISTS user(
+                screen_name VARCHAR(500) NOT NULL,
+                name VARCHAR(500),
+                description VARCHAR(500),
+                location VARCHAR(500),
+                UNIQUE(screen_name)
+            );
         """
         self.connection.executescript(script)
         self.connection.commit()
 
-    def add(self, tweets):
+    def add_tweets(self, tweets):
         query = """
             INSERT INTO tweets
                 (twitter_id, text, timestamp) VALUES
@@ -36,7 +43,7 @@ class Repository:
 
         def yield_params():
             for tweet in tweets:
-                yield self.to_row(tweet)
+                yield self.tweet_to_row(tweet)
 
         self.connection.executemany(query, yield_params())
         self.connection.commit()
@@ -49,7 +56,7 @@ class Repository:
         """
         last_row = self.query_one(query)
         if last_row:
-            return self.from_row(last_row)
+            return self.tweet_from_row(last_row)
         else:
             return None
 
@@ -60,7 +67,7 @@ class Repository:
                    LIMIT 10
         """
         for row in self.query_many(query):
-            yield self.from_row(row)
+            yield self.tweet_from_row(row)
 
     def all_tweets(self):
         query = """
@@ -68,7 +75,7 @@ class Repository:
                    ORDER BY twitter_id ASC
         """
         for row in self.query_many(query):
-            yield self.from_row(row)
+            yield self.tweet_from_row(row)
 
     def tweets_for_month(self, year, month_number):
         start_date = arrow.Arrow(year, month_number, 1)
@@ -82,14 +89,14 @@ class Repository:
         for row in self.query_many(query,
                                    start_date.timestamp,
                                    end_date.timestamp):
-            yield self.from_row(row)
+            yield self.tweet_from_row(row)
 
     def date_range(self):
         start_row = self.query_one("SELECT min(timestamp) FROM tweets")
         end_row = self.query_one("SELECT max(timestamp) FROM tweets")
         return (start_row[0], end_row[0])
 
-    def get_by_id(self, twitter_id):
+    def tweet_by_id(self, twitter_id):
         query = """
             SELECT twitter_id, text, timestamp FROM tweets
                 WHERE twitter_id=?
@@ -97,9 +104,9 @@ class Repository:
         row = self.query_one(query, (twitter_id,))
         if not row:
             raise NoSuchId(twitter_id)
-        return self.from_row(row)
+        return self.tweet_from_row(row)
 
-    def search(self, pattern):
+    def search_tweet(self, pattern):
         full_pattern = "%" + pattern + "%"
         query = """
             SELECT twitter_id, text, timestamp FROM tweets
@@ -107,17 +114,46 @@ class Repository:
                 ORDER BY twitter_id ASC
         """
         for row in self.query_many(query, full_pattern):
-            yield self.from_row(row)
+            yield self.tweet_from_row(row)
 
     @classmethod
-    def from_row(cls, row):
+    def tweet_from_row(cls, row):
         return twittback.Tweet(twitter_id=row["twitter_id"],
                                text=row["text"],
                                timestamp=row["timestamp"])
 
     @classmethod
-    def to_row(cls, tweet):
+    def tweet_to_row(cls, tweet):
         return (tweet.twitter_id, tweet.text, tweet.timestamp)
+
+    @property
+    def user(self):
+        query = "SELECT screen_name, name, description, location FROM user"
+        row = self.query_one(query)
+        return self.user_from_row(row)
+
+    def save_user(self, user):
+        query = """
+            INSERT OR REPLACE INTO user
+                (screen_name, name, location, description) VALUES
+                (?, ?, ?, ?)
+        """
+        params = self.user_to_row(user)
+        cursor = self.connection.cursor()
+        cursor.execute(query, params)
+        self.connection.commit()
+
+    @classmethod
+    def user_from_row(cls, row):
+        return twittback.User(screen_name=row["screen_name"],
+                              name=row["name"],
+                              location=row["location"],
+                              description=row["description"])
+
+    @classmethod
+    def user_to_row(cls, user):
+        return (user.screen_name, user.name,
+                user.location, user.description)
 
     def query_one(self, query, *args):
         cursor = self.connection.cursor()

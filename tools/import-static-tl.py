@@ -10,7 +10,7 @@ def import_tweets(base_path, repository):
     for json_path in base_path.files("*.json"):
         parsed_json = json.loads(json_path.text())
         tweets = [from_json(x) for x in parsed_json]
-        repository.add(tweets)
+        repository.add_tweets(tweets)
 
 
 def main():

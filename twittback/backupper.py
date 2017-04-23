@@ -13,9 +13,19 @@ class Backupper:
             yield tweet
 
     def backup(self):
+        self.save_user_data()
+        self.save_latest_tweets()
+
+    def save_user_data(self):
+        print("Saving user data ...", end=" ", flush=True)
+        user = self.client.user()
+        self.repository.save_user(user)
+        print("done")
+
+    def save_latest_tweets(self):
         latest_tweets = self.yield_latest_tweets()
         to_add = list(latest_tweets)
-        self.repository.add(reversed(to_add))
+        self.repository.add_tweets(reversed(to_add))
         if to_add:
             print("Stored", len(to_add), "new tweet(s)")
         else:

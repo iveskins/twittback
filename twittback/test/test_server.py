@@ -2,12 +2,13 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def init_repository(tweet_factory, repository, app):
+def init_repository(tweet_factory, repository, app, john):
     tweet_1 = tweet_factory.make_tweet(1, "First tweet! ", date="2017-07-07")
     tweet_2 = tweet_factory.make_tweet(2, "Second tweet", date="2017-08-02")
     tweet_3 = tweet_factory.make_tweet(3, "Third tweet", date="2017-08-15")
     tweet_4 = tweet_factory.make_tweet(4, "Fourth tweet", date="2017-09-01")
-    repository.add([tweet_1, tweet_2, tweet_3, tweet_4])
+    repository.add_tweets([tweet_1, tweet_2, tweet_3, tweet_4])
+    repository.save_user(john)
 
 
 def test_when_browsing_index(browser):
@@ -28,12 +29,12 @@ def test_perform_search(browser):
     assert "First tweet!" in browser.page
 
 
-def test_view(browser):
+def test_view_tweet(browser):
     browser.open("/view/tweet/1")
     assert "First tweet!" in browser.page
 
 
-def test_view_not_found(browser):
+def test_view_tweet_not_found(browser):
     browser.open("/view/tweet/42", allow_bad_status=True)
     assert "Not Found" in browser.page
 

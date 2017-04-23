@@ -40,7 +40,7 @@ class Server():
 
     def view_tweet(self, twitter_id):
         try:
-            tweet = self.repository.get_by_id(twitter_id)
+            tweet = self.repository.tweet_by_id(twitter_id)
         except twittback.repository.NoSuchId:
             self.app.abort(404)
         return self.presenter.view_tweet(tweet)
@@ -51,7 +51,7 @@ class Server():
 
     def search(self, pattern):
         max_search_results = 100
-        tweets = list(self.repository.search(pattern))
+        tweets = list(self.repository.search_tweet(pattern))
         error = None
         if len(tweets) >= max_search_results:
             error = "Your search for '%s' yielded more than %d results" % (

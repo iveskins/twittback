@@ -65,6 +65,13 @@ def tweet_factory():
 def repository():
     return twittback.repository.Repository(":memory:")
 
+@pytest.fixture
+def john():
+    return twittback.User(screen_name="john_doe",
+                          name="John Doe",
+                          location="Paris, France",
+                          description="Anonymous Coward")
+
 
 @pytest.fixture()
 def app(repository):

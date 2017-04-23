@@ -27,10 +27,21 @@ class TwitterClient(twittback.client.Client):
     def get_latest_tweets(self):
         for json_data in self.api.statuses.user_timeline(
                 screen_name=self.screen_name, count=MAX_TWEETS):
-            yield from_json(json_data)
+            yield tweet_from_json(json_data)
+
+    def user(self):
+        json_data = self.api.users.show(screen_name=self.screen_name)
+        return user_from_json(json_data)
 
 
-def from_json(json_data):
+def user_from_json(json_data):
+    return twittback.User(name=json_data["name"],
+                          screen_name=json_data["screen_name"],
+                          location=json_data["location"],
+                          description=json_data["description"])
+
+
+def tweet_from_json(json_data):
     twitter_id = json_data["id"]
     text = json_data["text"]
     fixed_text = fix_text(text, json_data)
