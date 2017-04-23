@@ -34,8 +34,9 @@ db:
   path: <path>
 
 server:
+  site_url: <http://example.com/>
   port: <port>
-  debug: true
+  debug: false
 ```
 
 * `pip3 install -e . --user`
@@ -43,7 +44,7 @@ server:
 *  Run `twittback` to fetch your latests tweets (can be done
    in a `cron` job or a `systemd` timer for instance)
 
-* Run the server with `python3 twittback/server.py`
+* Run the server with `python3 twittback/flask_app.py`
 
 
 # Screenshots
