@@ -7,9 +7,10 @@ import pytest
 
 
 @pytest.fixture
-def fake_client(john):
+def fake_client(john, alice, bob):
     client = twittback.client.fake_client.FakeClient()
     client.set_user(john)
+    client.set_following([alice, bob])
     return client
 
 
@@ -45,11 +46,17 @@ def test_first_backup(tweet_factory, repository, fake_client):
     assert list(repository.all_tweets()) == [tweet_1, tweet_2]
 
 
-def test_stores_user_info(repository, fake_client):
+def test_stores_user_info(repository, fake_client, john):
     backupper = twittback.backupper.Backupper(repository=repository,
                                               client=fake_client)
     backupper.backup()
-    user = repository.user()
-    assert user.name == "John Doe"
-    assert user.location == "Paris, France"
-    assert user.description == "Anonymous Coward"
+    assert repository.user() == john
+
+
+def test_stores_following(repository, fake_client, alice, bob):
+    backupper = twittback.backupper.Backupper(repository=repository,
+                                              client=fake_client)
+
+    backupper.backup()
+    following = repository.following()
+    assert list(following) == [alice, bob]

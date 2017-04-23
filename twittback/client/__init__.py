@@ -1,6 +1,6 @@
 import abc
 import twittback
-from twittback.types import TweetSequence
+from twittback.types import TweetSequence, UserSequence
 
 
 class Client(metaclass=abc.ABCMeta):
@@ -10,4 +10,8 @@ class Client(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def user(self) -> twittback.User:
+        pass
+
+    @abc.abstractmethod
+    def following(self) -> UserSequence:
         pass

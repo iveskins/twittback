@@ -6,4 +6,12 @@
 
 {% include "user.html" %}
 
+<h2>Following</h2>
+
+<ul>
+{% for user in following | sort(attribute="name") %}
+  <li> {{ user.name }} (@{{ user.screen_name }}) </li>
+{% endfor %}
+</ul>
+
 {% endblock %}

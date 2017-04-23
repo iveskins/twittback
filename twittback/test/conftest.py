@@ -65,6 +65,7 @@ def tweet_factory():
 def repository():
     return twittback.repository.Repository(":memory:")
 
+# John follows Alice and Bob
 @pytest.fixture
 def john():
     return twittback.User(screen_name="john_doe",
@@ -72,6 +73,19 @@ def john():
                           location="Paris, France",
                           description="Anonymous Coward")
 
+@pytest.fixture
+def alice():
+    return twittback.User(screen_name="alice",
+                          name="Alice",
+                          location="In Wonderland",
+                          description="")
+
+@pytest.fixture
+def bob():
+    return twittback.User(screen_name="bob",
+                          name="Bob Lennon",
+                          location="",
+                          description="Famous Guy")
 
 @pytest.fixture()
 def app(repository):

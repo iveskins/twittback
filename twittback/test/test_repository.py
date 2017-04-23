@@ -50,3 +50,9 @@ def test_tweet_by_id(tweet_factory, repository):
 def test_user(repository, john):
     repository.save_user(john)
     assert repository.user() == john
+
+
+def test_following(repository, alice, bob):
+    repository.save_following([alice, bob])
+
+    assert list(repository.following()) == [alice, bob]

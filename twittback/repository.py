@@ -28,8 +28,13 @@ class Repository:
                 name VARCHAR(500),
                 description VARCHAR(500),
                 location VARCHAR(500),
-                UNIQUE(screen_name)
-            );
+                UNIQUE(screen_name));
+            CREATE TABLE IF NOT EXISTS following(
+                screen_name VARCHAR(500) NOT NULL,
+                name VARCHAR(500),
+                description VARCHAR(500),
+                location VARCHAR(500),
+                UNIQUE(screen_name));
         """
         self.connection.executescript(script)
         self.connection.commit()
@@ -134,7 +139,7 @@ class Repository:
     def save_user(self, user):
         query = """
             INSERT OR REPLACE INTO user
-                (screen_name, name, location, description) VALUES
+                (screen_name, name, description, location) VALUES
                 (?, ?, ?, ?)
         """
         params = self.user_to_row(user)
@@ -146,13 +151,33 @@ class Repository:
     def user_from_row(cls, row):
         return twittback.User(screen_name=row["screen_name"],
                               name=row["name"],
-                              location=row["location"],
-                              description=row["description"])
+                              description=row["description"],
+                              location=row["location"])
 
     @classmethod
     def user_to_row(cls, user):
         return (user.screen_name, user.name,
-                user.location, user.description)
+                user.description, user.location)
+
+    def following(self):
+        query = "SELECT screen_name, name, description, location FROM following"
+        rows = self.query_many(query)
+        for row in rows:
+            yield self.user_from_row(row)
+
+    def save_following(self, following):
+        query = """
+            INSERT OR REPLACE INTO following
+                (screen_name, name, description, location) VALUES
+                (?, ?, ?, ?)
+        """
+
+        def yield_params():
+            for user in following:
+                yield self.user_to_row(user)
+
+        self.connection.executemany(query, yield_params())
+        self.connection.commit()
 
     def query_one(self, query, *args):
         cursor = self.connection.cursor()

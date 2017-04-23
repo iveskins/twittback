@@ -33,6 +33,12 @@ class TwitterClient(twittback.client.Client):
         json_data = self.api.users.show(screen_name=self.screen_name)
         return user_from_json(json_data)
 
+    def following(self):
+        json_data = self.api.friends.list()["users"]
+        for followed_user in json_data:
+            yield user_from_json(followed_user)
+
+
 
 def user_from_json(json_data):
     return twittback.User(name=json_data["name"],
@@ -110,6 +116,9 @@ def main():
     latest_tweets = client.get_latest_tweets()
     for tweet in latest_tweets:
         print(tweet)
+    following = client.following()
+    for user in following:
+        print(user)
 
 
 if __name__ == "__main__":

@@ -14,12 +14,19 @@ class Backupper:
 
     def backup(self):
         self.save_user_data()
+        self.save_following()
         self.save_latest_tweets()
 
     def save_user_data(self):
         print("Saving user data ...", end=" ", flush=True)
         user = self.client.user()
         self.repository.save_user(user)
+        print("done")
+
+    def save_following(self):
+        print("Saving list of followed users ...", end=" ", flush=True)
+        following = self.client.following()
+        self.repository.save_following(following)
         print("done")
 
     def save_latest_tweets(self):
