@@ -26,7 +26,7 @@ class Server():
 
     def index(self):
         start_timestamp, end_timestamp = self.repository.date_range()
-        user = self.repository.user
+        user = self.repository.user()
         return self.presenter.index(user, start_timestamp, end_timestamp)
 
     def not_found(self):
@@ -47,7 +47,7 @@ class Server():
         return self.presenter.view_tweet(tweet)
 
     def view_user(self):
-        user = self.repository.user
+        user = self.repository.user()
         return self.presenter.view_user(user)
 
     def timeline(self, year, month):

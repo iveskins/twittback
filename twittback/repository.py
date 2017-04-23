@@ -126,7 +126,6 @@ class Repository:
     def tweet_to_row(cls, tweet):
         return (tweet.twitter_id, tweet.text, tweet.timestamp)
 
-    @property
     def user(self):
         query = "SELECT screen_name, name, description, location FROM user"
         row = self.query_one(query)

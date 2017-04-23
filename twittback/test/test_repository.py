@@ -49,4 +49,4 @@ def test_tweet_by_id(tweet_factory, repository):
 
 def test_user(repository, john):
     repository.save_user(john)
-    assert repository.user == john
+    assert repository.user() == john

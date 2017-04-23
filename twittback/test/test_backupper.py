@@ -49,6 +49,7 @@ def test_stores_user_info(repository, fake_client):
     backupper = twittback.backupper.Backupper(repository=repository,
                                               client=fake_client)
     backupper.backup()
-    assert repository.user.name == "John Doe"
-    assert repository.user.location == "Paris, France"
-    assert repository.user.description == "Anonymous Coward"
+    user = repository.user()
+    assert user.name == "John Doe"
+    assert user.location == "Paris, France"
+    assert user.description == "Anonymous Coward"
