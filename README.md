@@ -56,6 +56,10 @@ server:
 
 ![by month screenshot](scrot/by_month.png?raw=true)
 
+## User profile
+
+![profile screenshot](scrot/profile.png?raw=true)
+
 # Live instance
 
 https://dmerej.info/twittback
