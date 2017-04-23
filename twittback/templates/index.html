@@ -3,7 +3,11 @@
 {% block content %}
 <h1>Welcome to TwittBack</h1>
 
-<h2>All tweets</h2>
+
+<h2>Tweets from {{ user.screen_name }}</h2>
+
+
+<a href="{{ app.url_for("view_user") }}">See user profile</a>
 
 {% for group in year_groups | reverse %}
     {% set year =  group[0] %}

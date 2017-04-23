@@ -36,6 +36,11 @@ def view_tweet(twitter_id):
     return server.view_tweet(twitter_id)
 
 
+@app.route("/view/user")
+def view_user():
+    return server.view_user()
+
+
 @app.route("/timeline/<int:year>/<int:month>")
 def timeline(year, month):
     return server.timeline(year, month)
@@ -48,6 +53,8 @@ def search():
         return server.search(pattern)
     else:
         return server.search_form()
+
+
 
 
 if __name__ == "__main__":

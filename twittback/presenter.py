@@ -18,10 +18,11 @@ class Presenter:
         self.feed = None
         self.app = None
 
-    def index(self, start_timestamp, end_timestamp):
+    def index(self, user, start_timestamp, end_timestamp):
         dates = self.collect_dates(start_timestamp, end_timestamp)
         year_groups = self.group_dates_by_year(dates)
         context = dict()
+        context["user"] = user
         context["year_groups"] = year_groups
         return self.renderer.render("index.html", context)
 
@@ -65,6 +66,11 @@ class Presenter:
         context = dict()
         context["tweet"] = self.tweet_for_template(tweet)
         return self.renderer.render("view_tweet.html", context)
+
+    def view_user(self, user):
+        context = dict()
+        context["user"] = user
+        return self.renderer.render("view_user.html", context)
 
     def not_found(self):
         return self.renderer.render("not_found.html", dict())

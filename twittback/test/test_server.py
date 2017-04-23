@@ -39,6 +39,11 @@ def test_view_tweet_not_found(browser):
     assert "Not Found" in browser.page
 
 
+def test_view_user(browser, john):
+    browser.open("/view/user")
+    assert john.name in browser.page
+
+
 def test_feed(browser):
     browser.open("/feed.atom")
     assert "Atom" in browser.page

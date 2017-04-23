@@ -26,7 +26,8 @@ class Server():
 
     def index(self):
         start_timestamp, end_timestamp = self.repository.date_range()
-        return self.presenter.index(start_timestamp, end_timestamp)
+        user = self.repository.user
+        return self.presenter.index(user, start_timestamp, end_timestamp)
 
     def not_found(self):
         return self.presenter.not_found()
@@ -44,6 +45,10 @@ class Server():
         except twittback.repository.NoSuchId:
             self.app.abort(404)
         return self.presenter.view_tweet(tweet)
+
+    def view_user(self):
+        user = self.repository.user
+        return self.presenter.view_user(user)
 
     def timeline(self, year, month):
         tweets_for_month = self.repository.tweets_for_month(year, month)
