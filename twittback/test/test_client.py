@@ -39,14 +39,14 @@ with_image = r"""
     "media": [
       {
         "indices": [
-          64,
-          87
+          63,
+          86
         ],
         "media_url_https": "https://pbs.twimg.com/media/Co4H3jYWEAAnzFg.jpg"
       }
     ]
   },
-  "text": "Is #XKCD's CSS broken or is it just me ?\n(Using firefox 47.0.1) https://t.co/FbpnFuBouY"
+  "text": "Is XKCD's CSS broken or is it just me ?\n(Using firefox 47.0.1) https://t.co/FbpnFuBouY"
 }
 """
 
@@ -62,5 +62,5 @@ def test_fix_media():
     json_data = json.loads(with_image)
     text = json_data["text"]
     fixed_text = twittback.client.twitter_client.fix_text(text, json_data)
-    assert fixed_text == """Is #XKCD's CSS broken or is it just me ?
+    assert fixed_text == """Is XKCD's CSS broken or is it just me ?
 (Using firefox 47.0.1) <a href="https://pbs.twimg.com/media/Co4H3jYWEAAnzFg.jpg">see image</a>"""
