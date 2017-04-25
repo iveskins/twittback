@@ -25,3 +25,11 @@ h1, h2 {
 a.permalink {
   text-decoration: none;
 }
+
+.hashtag {
+  font-weight: bold;
+}
+
+.handle {
+  font-style: italic;
+}

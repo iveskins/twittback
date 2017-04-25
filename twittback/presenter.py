@@ -1,5 +1,6 @@
 import abc
 import itertools
+import re
 
 import arrow
 import jinja2
@@ -139,7 +140,10 @@ class HTMLTweet():
 
     @property
     def html(self):
-        return "<pre>%s</pre>" % self.tweet.text
+        res = self.tweet.text
+        res = re.sub(r"(^|\s)#(\S+)", r'\1<span class="hashtag">#\2</span>', res)
+        res = re.sub(r"(^|\s)@(\S+)", r'\1<span class="handle">@\2</span>', res)
+        return "<pre>%s</pre>" % res
 
     @property
     def permalink(self):

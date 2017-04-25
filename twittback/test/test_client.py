@@ -32,6 +32,13 @@ with_urls = r"""
 }
 """
 
+def test_fix_urls():
+    json_data = json.loads(with_urls)
+    text = json_data["text"]
+    fixed_text = twittback.client.twitter_client.fix_text(text, json_data)
+    assert fixed_text == """New link added to <a href="https://dmerej.info/blog/pages/links/">dmerej.info/blog/pages/lin…</a>
+12 Signs You’re Working in a Feature Factory: <a href="https://hackernoon.com/12-signs-youre-working-in-a-feature-factory-44a5b938d6a2">hackernoon.com/12-signs-youre…</a>"""
+
 with_image = r"""
 {
   "entities": {
@@ -49,13 +56,6 @@ with_image = r"""
   "text": "Is XKCD's CSS broken or is it just me ?\n(Using firefox 47.0.1) https://t.co/FbpnFuBouY"
 }
 """
-
-def test_fix_urls():
-    json_data = json.loads(with_urls)
-    text = json_data["text"]
-    fixed_text = twittback.client.twitter_client.fix_text(text, json_data)
-    assert fixed_text == """New link added to <a href="https://dmerej.info/blog/pages/links/">dmerej.info/blog/pages/lin…</a>
-12 Signs You’re Working in a Feature Factory: <a href="https://hackernoon.com/12-signs-youre-working-in-a-feature-factory-44a5b938d6a2">hackernoon.com/12-signs-youre…</a>"""
 
 
 def test_fix_media():
