@@ -10,12 +10,14 @@ def test_insert_spans():
         text="Talking to @bob about #stuff"
     )
     app = mock.Mock()
+    app.url_for = mock.Mock()
+    app.url_for.return_value = "http://example.com/search?pattern=stuff"
     html_tweet = twittback.presenter.HTMLTweet(app, tweet)
     expected = '<pre>'
     expected += 'Talking to '
     expected += '<span class="handle">@bob</span> '
     expected += 'about '
-    expected += '<span class="hashtag">#stuff</span>'
+    expected += '<a class="hashtag" href="http://example.com/search?pattern=stuff">#stuff</a>'
     expected += '</pre>'
     assert html_tweet.html == expected
 

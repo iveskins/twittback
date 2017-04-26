@@ -30,6 +30,10 @@ a.permalink {
   font-weight: bold;
 }
 
+a.hashtag {
+  text-decoration: none;
+}
+
 .handle {
   font-style: italic;
 }

@@ -141,9 +141,29 @@ class HTMLTweet():
     @property
     def html(self):
         res = self.tweet.text
-        res = re.sub(r"(^|\s)#(\S+)", r'\1<span class="hashtag">#\2</span>', res)
-        res = re.sub(r"(^|\s)@(\S+)", r'\1<span class="handle">@\2</span>', res)
-        return "<pre>%s</pre>" % res
+        res = self.insert_span_around_handles(res)
+        res = self.handle_hashtags(res)
+        return self.surround_with_pre(res)
+
+    @classmethod
+    def surround_with_pre(cls, res):
+        return "<pre>" + res + "</pre>"
+
+    def handle_hashtags(self, text):
+
+        def replace_hashtag(match):
+            space_before = match.groups()[0]
+            hashtag_name = match.groups()[1]
+            search_url = self.app.url_for("search", pattern=hashtag_name)
+            res = '{space_before}<a class="hashtag" href="{search_url}">#{hashtag_name}</a>'
+            res = res.format(space_before=space_before, hashtag_name=hashtag_name, search_url=search_url)
+            return res
+
+        return re.sub(r"(^|\s)#(\w+)", replace_hashtag, text)
+
+    @classmethod
+    def insert_span_around_handles(cls, text):
+        return re.sub(r"(^|\s)@(\w+)", r'\1<span class="handle">@\2</span>', text)
 
     @property
     def permalink(self):
