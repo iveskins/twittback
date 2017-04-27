@@ -23,7 +23,12 @@ h1, h2 {
 }
 
 a.permalink {
+  display: none;
   text-decoration: none;
+}
+
+h3:hover a.permalink {
+  display: inline;
 }
 
 .hashtag {
@@ -32,6 +37,10 @@ a.permalink {
 
 a.hashtag {
   text-decoration: none;
+}
+
+a.hashtag:hover {
+ text-decoration: underline;
 }
 
 .handle {
