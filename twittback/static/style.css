@@ -31,6 +31,10 @@ h3:hover a.permalink {
   display: inline;
 }
 
+h3:hover a.permalink::before {
+  content: "🔗";
+}
+
 .hashtag {
   font-weight: bold;
 }
