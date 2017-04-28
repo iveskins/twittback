@@ -8,6 +8,7 @@ Nice and user-friendly backup of your twitter timeline
 
 * Clean code
 * Incremental backup of your timeline
+* No `t.co` redirection
 * Full-text search
 * Old school pagination
 * Chronological order
