@@ -60,3 +60,16 @@ def test_stores_following(repository, fake_client, alice, bob):
     backupper.backup()
     following = repository.following()
     assert list(following) == [alice, bob]
+
+
+def test_when_unfollowing(repository, fake_client, alice, bob):
+
+    backupper = twittback.backupper.Backupper(repository=repository,
+                                              client=fake_client)
+
+    backupper.backup()
+
+    fake_client.set_following([alice])
+
+    backupper.backup()
+    assert list(repository.following()) == [alice]

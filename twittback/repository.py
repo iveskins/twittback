@@ -169,6 +169,9 @@ class Repository:
             yield self.user_from_row(row)
 
     def save_following(self, following):
+        self.connection.execute("DELETE FROM following")
+        self.connection.commit()
+
         query = """
             INSERT OR REPLACE INTO following
                 (screen_name, name, description, location) VALUES
