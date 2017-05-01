@@ -4,11 +4,13 @@ from unittest import mock
 import twittback
 import twittback.presenter
 
+
 def test_insert_spans():
     tweet = twittback.Tweet(
         twitter_id=1,
         text="Talking to @bob about #stuff"
     )
+    expected_url = "http://example.com/search?pattern=stuff"
     app = mock.Mock()
     app.url_for = mock.Mock()
     app.url_for.return_value = "http://example.com/search?pattern=stuff"
@@ -17,7 +19,7 @@ def test_insert_spans():
     expected += 'Talking to '
     expected += '<span class="handle">@bob</span> '
     expected += 'about '
-    expected += '<a class="hashtag" href="http://example.com/search?pattern=stuff">#stuff</a>'
+    expected += '<a class="hashtag" href="%s">#stuff</a>' % expected_url
     expected += '</pre>'
     assert html_tweet.html == expected
 

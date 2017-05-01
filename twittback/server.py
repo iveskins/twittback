@@ -4,6 +4,7 @@ import flask
 import twittback.config
 import twittback.repository
 import twittback.presenter
+import twittback.presenter.renderer
 
 
 class Server():
@@ -97,7 +98,7 @@ def build_feed(config):
 def build_presenter(flask_app, feed):
     presenter = twittback.presenter.Presenter()
     presenter.app = flask_app
-    renderer = twittback.presenter.JinjaRenderer()
+    renderer = twittback.presenter.renderer.Renderer()
     renderer.app = flask_app
     presenter.renderer = renderer
     presenter.feed = feed
