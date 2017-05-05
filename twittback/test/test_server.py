@@ -16,7 +16,7 @@ def test_when_browsing_index(browser):
     """ can click on the 'by month' links """
     browser.open("/")
     assert "Welcome to TwittBack" in browser.page
-    print(browser.page)
+    assert "4 tweets saved" in browser.page
     link = browser.html_soup.find("a", text="July")
     browser.clink_link(link)
 

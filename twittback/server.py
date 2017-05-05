@@ -26,9 +26,11 @@ class Server():
         self._repository = value
 
     def index(self):
-        start_timestamp, end_timestamp = self.repository.date_range()
+        date_range = self.repository.date_range()
         user = self.repository.user()
-        return self.presenter.index(user, start_timestamp, end_timestamp)
+        num_tweets = self.repository.num_tweets()
+        return self.presenter.index(user=user, date_range=date_range,
+                                    num_tweets=num_tweets)
 
     def not_found(self):
         return self.presenter.not_found()

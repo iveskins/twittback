@@ -11,12 +11,14 @@ class Presenter:
         self.feed = None
         self.app = None
 
-    def index(self, user, start_timestamp, end_timestamp):
+    def index(self, *, user, date_range, num_tweets):
+        start_timestamp, end_timestamp = date_range
         dates = self.collect_dates(start_timestamp, end_timestamp)
         year_groups = self.group_dates_by_year(dates)
         context = dict()
         context["user"] = user
         context["year_groups"] = year_groups
+        context["num_tweets"] = num_tweets
         return self.renderer.render("index.html", context)
 
     def gen_feed(self, latest_tweets):

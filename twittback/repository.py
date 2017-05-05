@@ -82,6 +82,13 @@ class Repository:
         for row in self.query_many(query):
             yield self.tweet_from_row(row)
 
+    def num_tweets(self):
+        query = """
+            SELECT count(twitter_id) FROM tweets
+        """
+        result = self.query_one(query)
+        return result[0]
+
     def tweets_for_month(self, year, month_number):
         start_date = arrow.Arrow(year, month_number, 1)
         end_date = start_date.shift(months=+1)
