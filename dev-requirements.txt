@@ -1,4 +1,5 @@
 beautifulsoup4==4.5.3
+feedparser==5.2.1
 
 pycodestyle==2.3.1
 

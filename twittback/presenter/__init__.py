@@ -22,6 +22,7 @@ class Presenter:
         return self.renderer.render("index.html", context)
 
     def gen_feed(self, latest_tweets):
+        self.feed.items = list()
         for tweet in latest_tweets:
             self.add_tweet_to_feed(tweet)
         return self.feed.writeString("utf-8")
@@ -30,10 +31,12 @@ class Presenter:
         html_tweet = self.tweet_for_template(tweet)
         date = html_tweet.date
         permalink = html_tweet.permalink
-        entry_id = date
         description = html_tweet.html
+        unique_id = "twitter:%s" % tweet.twitter_id
+        title = html_tweet.human_date
         self.feed.add_item(
-            title=entry_id,
+            unique_id=unique_id,
+            title=title,
             link=permalink,
             description=description,
             pubdate=date,

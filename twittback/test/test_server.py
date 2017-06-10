@@ -1,3 +1,5 @@
+import feedparser
+
 import pytest
 
 
@@ -49,4 +51,18 @@ def test_view_user(browser, john, alice, bob):
 
 def test_feed(browser):
     browser.open("/feed.atom")
-    assert "Atom" in browser.page
+    parsed = feedparser.parse(browser.page)
+    assert parsed.feed.title == "Twittback"
+    assert len(parsed.entries) == 4
+    first_entry = parsed.entries[0]
+    assert "2017 Fri September" in first_entry.title
+
+
+def test_feed_no_side_effect(browser):
+    browser.open("/feed.atom")
+    parsed = feedparser.parse(browser.page)
+    assert len(parsed.entries) == 4
+
+    browser.open("/feed.atom")
+    parsed = feedparser.parse(browser.page)
+    assert len(parsed.entries) == 4
