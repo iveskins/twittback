@@ -14,7 +14,7 @@ class HTMLTweet():
 
     @property
     def human_date(self):
-        return self.date.strftime("%Y %a %B %d %H:%m")
+        return self.date.strftime("%Y %a %B %d %H:%M")
 
     @property
     def html(self):
