@@ -19,9 +19,9 @@ setup(name="twittback",
         "feedgenerator",
         "flask",
         "path.py",
+        "python-twitter",
         "requests",
         "ruamel.yaml",
-        "twitter",
       ],
       entry_points={
         "console_scripts": [

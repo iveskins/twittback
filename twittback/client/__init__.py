@@ -5,7 +5,7 @@ from twittback.types import TweetSequence, UserSequence
 
 class Client(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def get_latest_tweets(self) -> TweetSequence:
+    def get_latest_tweets(self, since_id=None) -> TweetSequence:
         pass
 
     @abc.abstractmethod

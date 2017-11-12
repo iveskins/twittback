@@ -6,11 +6,11 @@ class Backupper:
     def yield_latest_tweets(self):
         latest_tweet = self.repository.latest_tweet()
         print("Feching latest tweets ...")
-        tweets = self.client.get_latest_tweets()
-        for tweet in tweets:
-            if latest_tweet and (tweet.twitter_id <= latest_tweet.twitter_id):
-                break
-            yield tweet
+        if latest_tweet:
+            since_id = latest_tweet.twitter_id
+        else:
+            since_id = None
+        yield from self.client.get_latest_tweets(since_id=since_id)
 
     def backup(self):
         self.save_user_data()

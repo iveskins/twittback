@@ -5,9 +5,6 @@ import twittback.config
 import twittback.client
 
 
-MAX_TWEETS = 200
-
-
 def get_twitter_client():
     config = twittback.config.read_config()
     client = TwitterClient(config)
@@ -17,52 +14,58 @@ def get_twitter_client():
 class TwitterClient(twittback.client.Client):
     def __init__(self, config):
         auth_dict = config["auth"]
-        keys = ["token", "token_secret",
-                "api_key", "api_secret"]
-        auth_values = (auth_dict[key] for key in keys)
-        auth = twitter.OAuth(*auth_values)
-        self.api = twitter.Twitter(auth=auth)
+        self.api = twitter.Api(
+            consumer_key=auth_dict["api_key"],
+            consumer_secret=auth_dict["api_secret"],
+            access_token_key=auth_dict["token"],
+            access_token_secret=auth_dict["token_secret"],
+            tweet_mode="extended",
+        )
+
         self.screen_name = config["user"]["screen_name"]
 
-    def get_latest_tweets(self):
-        for json_data in self.api.statuses.user_timeline(
-                screen_name=self.screen_name, count=MAX_TWEETS):
-            yield tweet_from_json(json_data)
+    def get_latest_tweets(self, since_id=None):
+        for tweet in self.api.GetUserTimeline(
+                screen_name=self.screen_name, since_id=since_id):
+            yield convert_tweet(tweet)
 
     def user(self):
-        json_data = self.api.users.show(screen_name=self.screen_name)
-        return user_from_json(json_data)
+        user = self.api.GetUser(screen_name=self.screen_name)
+        return convert_user(user)
 
     def following(self):
-        json_data = self.api.friends.list()["users"]
-        for followed_user in json_data:
-            yield user_from_json(followed_user)
+        friends = self.api.GetFriends()
+        yield from (convert_user(friend) for friend in friends)
 
 
-def user_from_json(json_data):
-    return twittback.User(name=json_data["name"],
-                          screen_name=json_data["screen_name"],
-                          location=json_data["location"],
-                          description=json_data["description"])
+def convert_user(user):
+    return twittback.User(name=user.name,
+                          screen_name=user.screen_name,
+                          location=user.location,
+                          description=user.description)
 
 
-def tweet_from_json(json_data):
-    twitter_id = json_data["id"]
-    text = json_data["text"]
-    fixed_text = fix_text(text, json_data)
-    timestamp = to_timestamp(json_data["created_at"])
+def convert_tweet(tweet):
+    # TODO: urls are exposed in the python-twitter models, but
+    # without their indices, so we have to use the json returned
+    # by the twitter API directly
+    # pylint: disable=protected-access
+    metadata = tweet._json
+    twitter_id = tweet.id
+    fixed_text = fix_text(tweet.full_text, metadata)
+    timestamp = to_timestamp(tweet.created_at)
     return twittback.Tweet(twitter_id=twitter_id, text=fixed_text,
                            timestamp=timestamp)
 
 
-def fix_text(tweet_text, metadata):
+def fix_text(text, metadata):
     replacements = dict()
     entities = metadata["entities"]
     for start, end, replacement in process_urls(entities):
         replacements[start] = (end, replacement)
     for start, end, replacement in process_medias(entities):
         replacements[start] = (end, replacement)
-    replaced_text = perform_replaces(tweet_text, replacements)
+    replaced_text = perform_replaces(text, replacements)
     return replaced_text
 
 

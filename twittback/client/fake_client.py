@@ -7,8 +7,14 @@ class FakeClient(twittback.client.Client):
         self._user = None
         self._following = list()
 
-    def get_latest_tweets(self):
-        return self.timeline
+    def get_latest_tweets(self, since_id=None):
+        if since_id:
+            for tweet in self.timeline:
+                if tweet.twitter_id <= since_id:
+                    break
+                yield tweet
+        else:
+            yield from self.timeline
 
     def set_user(self, user):
         self._user = user
