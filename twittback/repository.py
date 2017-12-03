@@ -118,6 +118,16 @@ class Repository:
             raise NoSuchId(twitter_id)
         return self.tweet_from_row(row)
 
+    def set_text(self, twitter_id, text):
+        query = """
+            UPDATE tweets
+                SET text = ?
+                WHERE twitter_id = ?
+        """
+        cursor = self.connection.cursor()
+        cursor.execute(query, (text, twitter_id))
+        self.connection.commit()
+
     def search_tweet(self, pattern):
         full_pattern = "%" + pattern + "%"
         query = """

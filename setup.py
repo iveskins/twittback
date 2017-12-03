@@ -26,5 +26,6 @@ setup(name="twittback",
       entry_points={
         "console_scripts": [
           "twittback = twittback.backupper:main",
+          "twittback-edit = twittback.edit:main",
         ]
       })
