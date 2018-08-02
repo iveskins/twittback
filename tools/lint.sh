@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 
-pycodestyle .
+black --check .
 python tools/run-pyflakes.py
 python tools/run-mccabe.py 5
 
