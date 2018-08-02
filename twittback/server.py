@@ -1,5 +1,6 @@
 from feedgenerator import Atom1Feed
 import flask
+from path import Path
 
 import twittback.config
 import twittback.repository
@@ -118,7 +119,7 @@ def build_server():
 
     server = Server()
 
-    db_path = app_config["db"]["path"]
+    db_path = Path(app_config["db"]["path"])
     server.db_path = db_path
 
     server.app = flask_app
