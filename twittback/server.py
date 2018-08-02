@@ -84,7 +84,6 @@ def build_flask_app(config):
     flask_app = flask.Flask("twittback")
     flask_app.url_for = flask.url_for
     flask_app.abort = flask.abort
-    flask_app.config["APPLICATION_ROOT"] = config.get("application_root")
     flask_app.debug = config.get("debug", False)
     flask_app.port = config["port"]
     return flask_app
