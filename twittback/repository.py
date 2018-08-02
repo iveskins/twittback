@@ -89,8 +89,9 @@ class Repository:
         Base.metadata.create_all(self.engine)
 
     def migrate(self):
-        self.db_path.remove()
-        self.init_db()
+        # First migration is easy: just
+        # create the followers table
+        Followers.create(self.engine)
 
     def query(self, *args, **kwargs):
         return self.session.query(*args, **kwargs)
