@@ -1,4 +1,5 @@
 import arrow
+from path import Path
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.expression import func
 from sqlalchemy import Column, Integer, String, Text
@@ -185,4 +186,6 @@ class Repository:
 
 def get_repository():
     config = twittback.config.read_config()
-    return Repository(config["db"]["path"])
+    db_path = Path(config["db"]["path"])
+    db_path.parent.makedirs_p()
+    return Repository(db_path)
