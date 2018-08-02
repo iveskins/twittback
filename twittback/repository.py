@@ -81,6 +81,15 @@ class Repository:
         if self.db_path == ":memory:" or not self.db_path.exists():
             self.init_db(engine)
 
+    def query(self, *args, **kwargs):
+        return self.session.query(*args, **kwargs)
+
+    def add(self, *args, **kwargs):
+        return self.session.add(*args, **kwargs)
+
+    def commit(self):
+        return self.session.commit()
+
     @classmethod
     def init_db(cls, engine):
         Base.metadata.create_all(engine)
@@ -88,9 +97,9 @@ class Repository:
     def add_tweets(self, tweets):
         for tweet in tweets:
             to_add = Tweet.from_(tweet)
-            self.session.add(to_add)
+            self.add(to_add)
 
-        self.session.commit()
+        self.commit()
 
     def latest_tweet(self):
         latest_tweets = self.latest_tweets()
@@ -101,24 +110,24 @@ class Repository:
             return None
 
     def latest_tweets(self):
-        query = self.session.query(Tweet).order_by(Tweet.twitter_id.desc())
+        query = self.query(Tweet).order_by(Tweet.twitter_id.desc())
         for entry in query:
             yield entry.to_tweet()
 
     def all_tweets(self):
-        query = self.session.query(Tweet).order_by(Tweet.twitter_id.asc())
+        query = self.query(Tweet).order_by(Tweet.twitter_id.asc())
         for entry in query:
             yield entry.to_tweet()
 
     def num_tweets(self):
-        return self.session.query(Tweet).count()
+        return self.query(Tweet).count()
 
     def tweets_for_month(self, year, month_number):
         start_date = arrow.Arrow(year, month_number, 1)
         end_date = start_date.shift(months=+1)
 
         query = (
-            self.session.query(Tweet)
+            self.query(Tweet)
             .order_by(Tweet.twitter_id.asc())
             .filter(start_date.timestamp < Tweet.timestamp)
             .filter(Tweet.timestamp < end_date.timestamp)
@@ -127,8 +136,8 @@ class Repository:
             yield entry.to_tweet()
 
     def date_range(self):
-        start_row = self.session.query(func.min(Tweet.timestamp)).scalar()
-        end_row = self.session.query(func.max(Tweet.timestamp)).scalar()
+        start_row = self.query(func.min(Tweet.timestamp)).scalar()
+        end_row = self.query(func.max(Tweet.timestamp)).scalar()
         return (start_row, end_row)
 
     def tweet_by_id(self, twitter_id):
@@ -138,30 +147,26 @@ class Repository:
     def set_text(self, twitter_id, text):
         entry = self._tweet_entry_by_id(twitter_id)
         entry.text = text
-        self.session.commit()
+        self.commit()
 
     def search_tweet(self, pattern):
         full_pattern = "%" + pattern + "%"
-        query = self.session.query(Tweet).filter(Tweet.text.ilike(full_pattern))
+        query = self.query(Tweet).filter(Tweet.text.ilike(full_pattern))
         for entry in query:
             yield entry.to_tweet()
 
     def _tweet_entry_by_id(self, twitter_id):
-        entry = (
-            self.session.query(Tweet)
-            .filter(Tweet.twitter_id == twitter_id)
-            .one_or_none()
-        )
+        entry = self.query(Tweet).filter(Tweet.twitter_id == twitter_id).one_or_none()
         if not entry:
             raise NoSuchId(twitter_id)
         return entry
 
     def user(self):
-        entry = self.session.query(User).one()
+        entry = self.query(User).one()
         return entry.to_user()
 
     def save_user(self, user):
-        self.session.query(User).delete()
+        self.query(User).delete()
 
         entry = User.from_(user)
         entry.screen_name = user.screen_name
@@ -169,19 +174,24 @@ class Repository:
         entry.description = user.description
         entry.location = user.location
 
-        self.session.add(entry)
-        self.session.commit()
+        self.add(entry)
+        self.commit()
 
     def following(self):
-        for entry in self.session.query(Following).all():
-            yield entry.to_user()
+        return self._get_related_users(Following)
 
     def save_following(self, following):
-        self.session.query(Following).delete()
+        return self._set_related_users(Following, following)
 
-        for user in following:
-            self.session.add(Following.from_(user))
-        self.session.commit()
+    def _get_related_users(self, userClass):
+        for entry in self.query(userClass).all():
+            yield entry.to_user()
+
+    def _set_related_users(self, userClass, users):
+        self.query(userClass).delete()
+        for user in users:
+            self.add(userClass.from_(user))
+        self.commit()
 
 
 def get_repository():
