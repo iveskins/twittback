@@ -27,8 +27,7 @@ def setup_edit_test(tweet_factory, repository, mock, *, nvim_returncode):
 
 
 def test_edit_happy(tweet_factory, repository, mock):
-    spy = setup_edit_test(tweet_factory, repository, mock,
-                          nvim_returncode=0)
+    spy = setup_edit_test(tweet_factory, repository, mock, nvim_returncode=0)
 
     twittback.edit.edit(repository, 42)
     assert spy.cmd[0] == "nvim"
@@ -37,8 +36,7 @@ def test_edit_happy(tweet_factory, repository, mock):
 
 
 def test_edit_editor_nonzero_exit(tweet_factory, repository, mock):
-    spy = setup_edit_test(tweet_factory, repository, mock,
-                          nvim_returncode=1)
+    spy = setup_edit_test(tweet_factory, repository, mock, nvim_returncode=1)
     with pytest.raises(SystemExit) as e:
         twittback.edit.edit(repository, 42)
 
@@ -49,8 +47,7 @@ def test_edit_editor_nonzero_exit(tweet_factory, repository, mock):
 
 
 def test_edit_no_such_id(tweet_factory, repository, mock):
-    spy = setup_edit_test(tweet_factory, repository, mock,
-                          nvim_returncode=1)
+    spy = setup_edit_test(tweet_factory, repository, mock, nvim_returncode=1)
 
     with pytest.raises(SystemExit) as e:
         twittback.edit.edit(repository, 1001)

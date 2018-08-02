@@ -25,37 +25,29 @@ def test_backup_new_tweets(tweet_factory, repository, fake_client):
     tweet_4 = tweet_factory.make_tweet(4, "four")
 
     repository.add_tweets([tweet_1, tweet_2])
-    fake_client.timeline = [
-        tweet_4, tweet_3, tweet_2, tweet_1
-    ]
-    backupper = twittback.backupper.Backupper(repository=repository,
-                                              client=fake_client)
+    fake_client.timeline = [tweet_4, tweet_3, tweet_2, tweet_1]
+    backupper = twittback.backupper.Backupper(repository=repository, client=fake_client)
     backupper.backup()
-    assert list(repository.all_tweets()) == [
-        tweet_1, tweet_2, tweet_3, tweet_4
-    ]
+    assert list(repository.all_tweets()) == [tweet_1, tweet_2, tweet_3, tweet_4]
 
 
 def test_first_backup(tweet_factory, repository, fake_client):
     tweet_1 = tweet_factory.make_tweet(1, "one")
     tweet_2 = tweet_factory.make_tweet(2, "two")
     fake_client.timeline = [tweet_2, tweet_1]
-    backupper = twittback.backupper.Backupper(repository=repository,
-                                              client=fake_client)
+    backupper = twittback.backupper.Backupper(repository=repository, client=fake_client)
     backupper.backup()
     assert list(repository.all_tweets()) == [tweet_1, tweet_2]
 
 
 def test_stores_user_info(repository, fake_client, john):
-    backupper = twittback.backupper.Backupper(repository=repository,
-                                              client=fake_client)
+    backupper = twittback.backupper.Backupper(repository=repository, client=fake_client)
     backupper.backup()
     assert repository.user() == john
 
 
 def test_stores_following(repository, fake_client, alice, bob):
-    backupper = twittback.backupper.Backupper(repository=repository,
-                                              client=fake_client)
+    backupper = twittback.backupper.Backupper(repository=repository, client=fake_client)
 
     backupper.backup()
     following = repository.following()
@@ -64,8 +56,7 @@ def test_stores_following(repository, fake_client, alice, bob):
 
 def test_when_unfollowing(repository, fake_client, alice, bob):
 
-    backupper = twittback.backupper.Backupper(repository=repository,
-                                              client=fake_client)
+    backupper = twittback.backupper.Backupper(repository=repository, client=fake_client)
 
     backupper.backup()
 

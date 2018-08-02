@@ -3,7 +3,7 @@ import re
 import arrow
 
 
-class HTMLTweet():
+class HTMLTweet:
     def __init__(self, app, tweet):
         self.app = app
         self.tweet = tweet
@@ -28,25 +28,24 @@ class HTMLTweet():
         return "<pre>" + res + "</pre>"
 
     def handle_hashtags(self, text):
-
         def replace_hashtag(match):
             space_before = match.groups()[0]
             hashtag_name = match.groups()[1]
             search_url = self.app.url_for("search", pattern=hashtag_name)
-            res = '{space_before}'
+            res = "{space_before}"
             res += '<a class="hashtag" href="{search_url}">#{hashtag_name}</a>'
-            res = res.format(space_before=space_before,
-                             hashtag_name=hashtag_name,
-                             search_url=search_url)
+            res = res.format(
+                space_before=space_before,
+                hashtag_name=hashtag_name,
+                search_url=search_url,
+            )
             return res
 
         return re.sub(r"(^|\s)#(\w+)", replace_hashtag, text)
 
     @classmethod
     def insert_span_around_handles(cls, text):
-        return re.sub(r"(^|\s)@(\w+)",
-                      r'\1<span class="handle">@\2</span>',
-                      text)
+        return re.sub(r"(^|\s)@(\w+)", r'\1<span class="handle">@\2</span>', text)
 
     @property
     def permalink(self):

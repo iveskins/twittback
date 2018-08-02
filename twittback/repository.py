@@ -98,9 +98,7 @@ class Repository:
                 WHERE (timestamp > ?) AND (timestamp < ?)
                 ORDER BY twitter_id ASC
         """
-        for row in self.query_many(query,
-                                   start_date.timestamp,
-                                   end_date.timestamp):
+        for row in self.query_many(query, start_date.timestamp, end_date.timestamp):
             yield self.tweet_from_row(row)
 
     def date_range(self):
@@ -140,9 +138,9 @@ class Repository:
 
     @classmethod
     def tweet_from_row(cls, row):
-        return twittback.Tweet(twitter_id=row["twitter_id"],
-                               text=row["text"],
-                               timestamp=row["timestamp"])
+        return twittback.Tweet(
+            twitter_id=row["twitter_id"], text=row["text"], timestamp=row["timestamp"]
+        )
 
     @classmethod
     def tweet_to_row(cls, tweet):
@@ -166,15 +164,16 @@ class Repository:
 
     @classmethod
     def user_from_row(cls, row):
-        return twittback.User(screen_name=row["screen_name"],
-                              name=row["name"],
-                              description=row["description"],
-                              location=row["location"])
+        return twittback.User(
+            screen_name=row["screen_name"],
+            name=row["name"],
+            description=row["description"],
+            location=row["location"],
+        )
 
     @classmethod
     def user_to_row(cls, user):
-        return (user.screen_name, user.name,
-                user.description, user.location)
+        return (user.screen_name, user.name, user.description, user.location)
 
     def following(self):
         query = """

@@ -26,7 +26,8 @@ class TwitterClient(twittback.client.Client):
 
     def get_latest_tweets(self, since_id=None):
         for tweet in self.api.GetUserTimeline(
-                screen_name=self.screen_name, since_id=since_id):
+            screen_name=self.screen_name, since_id=since_id
+        ):
             yield convert_tweet(tweet)
 
     def user(self):
@@ -39,10 +40,12 @@ class TwitterClient(twittback.client.Client):
 
 
 def convert_user(user):
-    return twittback.User(name=user.name,
-                          screen_name=user.screen_name,
-                          location=user.location,
-                          description=user.description)
+    return twittback.User(
+        name=user.name,
+        screen_name=user.screen_name,
+        location=user.location,
+        description=user.description,
+    )
 
 
 def convert_tweet(tweet):
@@ -54,8 +57,7 @@ def convert_tweet(tweet):
     twitter_id = tweet.id
     fixed_text = fix_text(tweet.full_text, metadata)
     timestamp = to_timestamp(tweet.created_at)
-    return twittback.Tweet(twitter_id=twitter_id, text=fixed_text,
-                           timestamp=timestamp)
+    return twittback.Tweet(twitter_id=twitter_id, text=fixed_text, timestamp=timestamp)
 
 
 def fix_text(text, metadata):

@@ -7,7 +7,7 @@ import twittback.presenter
 import twittback.presenter.renderer
 
 
-class Server():
+class Server:
     def __init__(self):
         self.app = None
         self.port = None
@@ -29,8 +29,9 @@ class Server():
         date_range = self.repository.date_range()
         user = self.repository.user()
         num_tweets = self.repository.num_tweets()
-        return self.presenter.index(user=user, date_range=date_range,
-                                    num_tweets=num_tweets)
+        return self.presenter.index(
+            user=user, date_range=date_range, num_tweets=num_tweets
+        )
 
     def not_found(self):
         return self.presenter.not_found()
@@ -64,7 +65,9 @@ class Server():
         error = None
         if len(tweets) >= max_search_results:
             error = "Your search for '%s' yielded more than %d results" % (
-                pattern, max_search_results)
+                pattern,
+                max_search_results,
+            )
         if not tweets:
             error = "No results found for '%s'" % pattern
         return self.presenter.search_results(pattern, tweets, error=error)
@@ -90,10 +93,9 @@ def build_flask_app(config):
 def build_feed(config):
     site_url = config["site_url"]
     feed_url = "%s/feed.atom" % site_url
-    atom1_feed = Atom1Feed(title="Twittback",
-                           description="Latest tweets",
-                           link=site_url,
-                           feed_url=feed_url)
+    atom1_feed = Atom1Feed(
+        title="Twittback", description="Latest tweets", link=site_url, feed_url=feed_url
+    )
     return atom1_feed
 
 

@@ -17,7 +17,7 @@ def ignore(p):
     parts = p.splitall()
     if any(x.startswith(".") for x in parts):
         return True
-    if 'test' in parts:
+    if "test" in parts:
         return True
     return False
 

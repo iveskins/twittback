@@ -18,9 +18,7 @@ def tmp_path(tmpdir):
 class TweetFactory:
     def make_tweet(self, twitter_id, text, **kwargs):
         fixed_kwargs = self.fix_kwargs(kwargs)
-        ret = twittback.Tweet(
-            twitter_id=twitter_id, text=text,
-            **fixed_kwargs)
+        ret = twittback.Tweet(twitter_id=twitter_id, text=text, **fixed_kwargs)
         return ret
 
     @classmethod
@@ -31,7 +29,7 @@ class TweetFactory:
         return kwargs
 
 
-class Browser():
+class Browser:
     def __init__(self, flask_client):
         self._flask_client = flask_client
 
@@ -69,26 +67,26 @@ def repository():
 # John follows Alice and Bob
 @pytest.fixture
 def john():
-    return twittback.User(screen_name="john_doe",
-                          name="John Doe",
-                          location="Paris, France",
-                          description="Anonymous Coward")
+    return twittback.User(
+        screen_name="john_doe",
+        name="John Doe",
+        location="Paris, France",
+        description="Anonymous Coward",
+    )
 
 
 @pytest.fixture
 def alice():
-    return twittback.User(screen_name="alice",
-                          name="Alice",
-                          location="In Wonderland",
-                          description="")
+    return twittback.User(
+        screen_name="alice", name="Alice", location="In Wonderland", description=""
+    )
 
 
 @pytest.fixture
 def bob():
-    return twittback.User(screen_name="bob",
-                          name="Bob Lennon",
-                          location="",
-                          description="Famous Guy")
+    return twittback.User(
+        screen_name="bob", name="Bob Lennon", location="", description="Famous Guy"
+    )
 
 
 @pytest.fixture()
