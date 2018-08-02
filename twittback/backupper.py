@@ -52,13 +52,8 @@ def main():
     import twittback.client.twitter_client
     import twittback.repository
 
-
     client = twittback.client.twitter_client.get_twitter_client()
     repository = twittback.repository.get_repository()
-
-    if "migrate" in sys.argv:
-        repository.migrate()
-        return
 
     backupper = Backupper(client=client, repository=repository)
     backupper.backup()

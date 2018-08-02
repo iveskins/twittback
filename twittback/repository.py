@@ -88,11 +88,6 @@ class Repository:
     def init_db(self):
         Base.metadata.create_all(self.engine)
 
-    def migrate(self):
-        # First migration is easy: just
-        # create the followers table
-        Followers.create(self.engine)
-
     def query(self, *args, **kwargs):
         return self.session.query(*args, **kwargs)
 
@@ -101,7 +96,6 @@ class Repository:
 
     def commit(self):
         return self.session.commit()
-
 
     def add_tweets(self, tweets):
         for tweet in tweets:
