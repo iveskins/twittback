@@ -10,7 +10,15 @@
 
 <ul>
 {% for user in following | sort(attribute="name") %}
-  <li> {{ user.name }} (@{{ user.screen_name }}) </li>
+<li> {% include "friend.html" %} </li>
+{% endfor %}
+</ul>
+
+<h2>Followers</h2>
+
+<ul>
+{% for user in followers | sort(attribute="name") %}
+<li> {% include "friend.html" %} </li>
 {% endfor %}
 </ul>
 

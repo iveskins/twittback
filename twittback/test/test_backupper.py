@@ -55,12 +55,19 @@ def test_stores_following(repository, fake_client, alice, bob):
 
 
 def test_when_unfollowing(repository, fake_client, alice, bob):
-
     backupper = twittback.backupper.Backupper(repository=repository, client=fake_client)
-
     backupper.backup()
 
     fake_client.set_following([alice])
 
     backupper.backup()
     assert list(repository.following()) == [alice]
+
+
+def test_followerrs(repository, fake_client, bob):
+    fake_client.set_followers([bob])
+
+    backupper = twittback.backupper.Backupper(repository=repository, client=fake_client)
+    backupper.backup()
+
+    assert list(repository.followers()) == [bob]

@@ -71,15 +71,26 @@ class Following(Base, _UserModel):
     __tablename__ = "following"
 
 
+class Followers(Base, _UserModel):
+    __tablename__ = "followers"
+
+
 class Repository:
     def __init__(self, db_path):
         self.db_path = db_path
         connect_string = "sqlite:///" + db_path
-        engine = create_engine(connect_string)
-        session_maker = sessionmaker(bind=engine)
+        self.engine = create_engine(connect_string)
+        session_maker = sessionmaker(bind=self.engine)
         self.session = session_maker()
         if self.db_path == ":memory:" or not self.db_path.exists():
-            self.init_db(engine)
+            self.init_db()
+
+    def init_db(self):
+        Base.metadata.create_all(self.engine)
+
+    def migrate(self):
+        self.db_path.remove()
+        self.init_db()
 
     def query(self, *args, **kwargs):
         return self.session.query(*args, **kwargs)
@@ -90,9 +101,6 @@ class Repository:
     def commit(self):
         return self.session.commit()
 
-    @classmethod
-    def init_db(cls, engine):
-        Base.metadata.create_all(engine)
 
     def add_tweets(self, tweets):
         for tweet in tweets:
@@ -182,6 +190,12 @@ class Repository:
 
     def save_following(self, following):
         return self._set_related_users(Following, following)
+
+    def followers(self):
+        return self._get_related_users(Followers)
+
+    def save_followers(self, followers):
+        return self._set_related_users(Followers, followers)
 
     def _get_related_users(self, userClass):
         for entry in self.query(userClass).all():

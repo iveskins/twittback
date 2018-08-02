@@ -15,3 +15,7 @@ class Client(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def following(self) -> UserSequence:
         pass
+
+    @abc.abstractmethod
+    def followers(self) -> UserSequence:
+        pass

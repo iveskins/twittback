@@ -54,7 +54,8 @@ class Server:
     def view_user(self):
         user = self.repository.user()
         following = self.repository.following()
-        return self.presenter.view_user(user, following=following)
+        followers = self.repository.followers()
+        return self.presenter.view_user(user, following=following, followers=followers)
 
     def timeline(self, year, month):
         tweets_for_month = self.repository.tweets_for_month(year, month)

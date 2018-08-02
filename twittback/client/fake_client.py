@@ -6,6 +6,7 @@ class FakeClient(twittback.client.Client):
         self.timeline = list()
         self._user = None
         self._following = list()
+        self._followers = list()
 
     def get_latest_tweets(self, since_id=None):
         if since_id:
@@ -27,3 +28,9 @@ class FakeClient(twittback.client.Client):
 
     def following(self):
         return self._following
+
+    def set_followers(self, followers):
+        self._followers = followers
+
+    def followers(self):
+        return self._followers

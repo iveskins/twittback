@@ -1,5 +1,3 @@
-import re
-
 import arrow
 import bs4
 import path
@@ -86,6 +84,12 @@ def alice():
 def bob():
     return twittback.User(
         screen_name="bob", name="Bob Lennon", location="", description="Famous Guy"
+    )
+
+@pytest.fixture
+def eve():
+    return twittback.User(
+        screen_name="Evan", name="Evil Evan", location="In Hell", description="Fanboy"
     )
 
 

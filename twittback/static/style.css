@@ -51,6 +51,11 @@ a.hashtag:hover {
  text-decoration: underline;
 }
 
+a.handle {
+  text-decoration: underline;
+ text-decoration-style: dotted;
+}
+
 .handle {
   font-style: italic;
 }

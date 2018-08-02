@@ -38,6 +38,10 @@ class TwitterClient(twittback.client.Client):
         friends = self.api.GetFriends()
         yield from (convert_user(friend) for friend in friends)
 
+    def followers(self):
+        followers = self.api.GetFollowers()
+        yield from (convert_user(follower) for follower in followers)
+
 
 def convert_user(user):
     return twittback.User(

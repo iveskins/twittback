@@ -65,10 +65,11 @@ class Presenter:
         context["tweet"] = self.tweet_for_template(tweet)
         return self.renderer.render("view_tweet.html", context)
 
-    def view_user(self, user, following):
+    def view_user(self, user, *, following, followers):
         context = dict()
         context["user"] = user
         context["following"] = following
+        context["followers"] = followers
         return self.renderer.render("view_user.html", context)
 
     def not_found(self):

@@ -1,3 +1,5 @@
+import sys
+
 class Backupper:
     def __init__(self, *, client, repository):
         self.client = client
@@ -15,6 +17,7 @@ class Backupper:
     def backup(self):
         self.save_user_data()
         self.save_following()
+        self.save_followers()
         self.save_latest_tweets()
 
     def save_user_data(self):
@@ -27,6 +30,12 @@ class Backupper:
         print("Saving list of followed users ...", end=" ", flush=True)
         following = self.client.following()
         self.repository.save_following(following)
+        print("done")
+
+    def save_followers(self):
+        print("Saving list of followers ...", end=" ", flush=True)
+        followers = self.client.followers()
+        self.repository.save_followers(followers)
         print("done")
 
     def save_latest_tweets(self):
@@ -43,8 +52,14 @@ def main():
     import twittback.client.twitter_client
     import twittback.repository
 
+
     client = twittback.client.twitter_client.get_twitter_client()
     repository = twittback.repository.get_repository()
+
+    if "migrate" in sys.argv:
+        repository.migrate()
+        return
+
     backupper = Backupper(client=client, repository=repository)
     backupper.backup()
 

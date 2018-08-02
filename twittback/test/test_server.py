@@ -4,7 +4,7 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def init_repository(tweet_factory, repository, app, john, alice, bob):
+def init_repository(tweet_factory, repository, app, john, alice, bob, eve):
     tweet_1 = tweet_factory.make_tweet(1, "First tweet! ", date="2017-07-07")
     tweet_2 = tweet_factory.make_tweet(2, "Second tweet", date="2017-08-02")
     tweet_3 = tweet_factory.make_tweet(3, "Third tweet", date="2017-08-15")
@@ -12,6 +12,7 @@ def init_repository(tweet_factory, repository, app, john, alice, bob):
     repository.add_tweets([tweet_1, tweet_2, tweet_3, tweet_4])
     repository.save_user(john)
     repository.save_following([alice, bob])
+    repository.save_followers([eve])
 
 
 def test_when_browsing_index(browser):
@@ -42,11 +43,13 @@ def test_view_tweet_not_found(browser):
     assert "Not Found" in browser.page
 
 
-def test_view_user(browser, john, alice, bob):
+def test_view_user(browser, john, alice, bob, eve):
     browser.open("/view/user")
     assert john.name in browser.page
     assert "Following" in browser.page
     assert alice.name in browser.page
+    assert "Followers" in browser.page
+    assert eve.name in browser.page
 
 
 def test_feed(browser):
