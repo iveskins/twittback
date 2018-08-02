@@ -30,6 +30,10 @@ class TwitterClient(twittback.client.Client):
         ):
             yield convert_tweet(tweet)
 
+    def get_tweet(self, id):
+        status = self.api.GetStatus(id)
+        return convert_tweet(status)
+
     def user(self):
         user = self.api.GetUser(screen_name=self.screen_name)
         return convert_user(user)
