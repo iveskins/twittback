@@ -113,7 +113,7 @@ class Repository:
             return None
 
     def latest_tweets(self):
-        query = self.query(Tweet).order_by(Tweet.twitter_id.desc())
+        query = self.query(Tweet).order_by(Tweet.twitter_id.desc())[0:10]
         for entry in query:
             yield entry.to_tweet()
 
