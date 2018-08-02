@@ -5,13 +5,11 @@ import flask
 import twittback.server
 
 
-# pylint: disable=invalid-name
 server = twittback.server.build_server()
 app = server.app
 
 
 @app.errorhandler(404)
-# pylint: disable=unused-argument
 def not_found(error):
     return server.not_found(), 404
 

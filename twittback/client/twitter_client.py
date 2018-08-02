@@ -52,7 +52,6 @@ def convert_tweet(tweet):
     # TODO: urls are exposed in the python-twitter models, but
     # without their indices, so we have to use the json returned
     # by the twitter API directly
-    # pylint: disable=protected-access
     metadata = tweet._json
     twitter_id = tweet.id
     fixed_text = fix_text(tweet.full_text, metadata)
