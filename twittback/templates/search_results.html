@@ -15,6 +15,9 @@
 
 {% for tweet in tweets %}
 {% include "tweet.html" %}
+{% if not loop.last %}
+<hr />
+{% endif %}
 {% endfor %}
 
 {% endif %}
