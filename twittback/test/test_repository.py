@@ -47,6 +47,15 @@ def test_tweet_by_id(tweet_factory, repository):
         repository.tweet_by_id(3)
 
 
+def test_set_text(tweet_factory, repository):
+    tweet_1 = tweet_factory.make_tweet(1, "one")
+    tweet_2 = tweet_factory.make_tweet(2, "two")
+    repository.add_tweets([tweet_1, tweet_2])
+    repository.set_text(1, "changed")
+    assert repository.tweet_by_id(1).text == "changed"
+    assert repository.tweet_by_id(2).text == "two"
+
+
 def test_user(repository, john):
     repository.save_user(john)
     assert repository.user() == john

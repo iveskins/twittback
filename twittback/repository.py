@@ -1,6 +1,10 @@
-import sqlite3
-
 import arrow
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.sql.expression import func
+from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 
 import twittback
 import twittback.config
@@ -12,211 +16,171 @@ class NoSuchId(Exception):
         self.twitter_id = twitter_id
 
 
+Base = declarative_base()
+
+
+class Tweet(Base):
+    __tablename__ = "tweets"
+
+    twitter_id = Column(Integer, primary_key=True)
+    text = Column(Text)
+    timestamp = Column(Integer)
+
+    def to_tweet(self):
+        return twittback.Tweet(
+            twitter_id=self.twitter_id, text=self.text, timestamp=self.timestamp
+        )
+
+    @classmethod
+    def from_(cls, tweet):
+        return cls(
+            twitter_id=tweet.twitter_id, text=tweet.text, timestamp=tweet.timestamp
+        )
+
+
+class _UserModel:
+    screen_name = Column(String, primary_key=True)
+    name = Column(Text)
+    description = Column(Text)
+    location = Column(Text)
+
+    @classmethod
+    def from_(cls, user):
+        return cls(
+            screen_name=user.screen_name,
+            name=user.name,
+            description=user.description,
+            location=user.location,
+        )
+
+    def to_user(self):
+        return twittback.User(
+            screen_name=self.screen_name,
+            description=self.description,
+            location=self.location,
+            name=self.name,
+        )
+
+
+class User(Base, _UserModel):
+    __tablename__ = "user"
+
+
+class Following(Base, _UserModel):
+    __tablename__ = "following"
+
+
 class Repository:
     def __init__(self, db_path):
         self.db_path = db_path
-        self.connection = sqlite3.connect(db_path)
-        self.connection.row_factory = sqlite3.Row
-        script = """
-            CREATE VIRTUAL TABLE IF NOT EXISTS tweets USING fts4 (
-                twitter_id INTEGER NOT NULL,
-                text VARCHAR(500) NOT NULL,
-                timestamp INTEGER NOT NULL
-                UNIQUE(twitter_id));
-            CREATE TABLE IF NOT EXISTS user(
-                screen_name VARCHAR(500) NOT NULL,
-                name VARCHAR(500),
-                description VARCHAR(500),
-                location VARCHAR(500),
-                UNIQUE(screen_name));
-            CREATE TABLE IF NOT EXISTS following(
-                screen_name VARCHAR(500) NOT NULL,
-                name VARCHAR(500),
-                description VARCHAR(500),
-                location VARCHAR(500),
-                UNIQUE(screen_name));
-        """
-        self.connection.executescript(script)
-        self.connection.commit()
+        connect_string = "sqlite:///" + db_path
+        engine = create_engine(connect_string)
+        session_maker = sessionmaker(bind=engine)
+        self.session = session_maker()
+        if self.db_path == ":memory:" or not self.db_path.exists():
+            self.init_db(engine)
+
+    @classmethod
+    def init_db(cls, engine):
+        Base.metadata.create_all(engine)
 
     def add_tweets(self, tweets):
-        query = """
-            INSERT INTO tweets
-                (twitter_id, text, timestamp) VALUES
-                (?, ?, ?)
-        """
+        for tweet in tweets:
+            to_add = Tweet.from_(tweet)
+            self.session.add(to_add)
 
-        def yield_params():
-            for tweet in tweets:
-                yield self.tweet_to_row(tweet)
-
-        self.connection.executemany(query, yield_params())
-        self.connection.commit()
+        self.session.commit()
 
     def latest_tweet(self):
-        query = """
-            SELECT twitter_id, text, timestamp FROM tweets
-                   ORDER BY twitter_id DESC
-                   LIMIT 1
-        """
-        last_row = self.query_one(query)
-        if last_row:
-            return self.tweet_from_row(last_row)
-        else:
+        latest_tweets = self.latest_tweets()
+        try:
+            latest_tweet = next(latest_tweets)
+            return latest_tweet
+        except StopIteration:
             return None
 
     def latest_tweets(self):
-        query = """
-            SELECT twitter_id, text, timestamp FROM tweets
-                   ORDER BY twitter_id DESC
-                   LIMIT 10
-        """
-        for row in self.query_many(query):
-            yield self.tweet_from_row(row)
+        query = self.session.query(Tweet).order_by(Tweet.twitter_id.desc())
+        for entry in query:
+            yield entry.to_tweet()
 
     def all_tweets(self):
-        query = """
-            SELECT twitter_id, text, timestamp FROM tweets
-                   ORDER BY twitter_id ASC
-        """
-        for row in self.query_many(query):
-            yield self.tweet_from_row(row)
+        query = self.session.query(Tweet).order_by(Tweet.twitter_id.asc())
+        for entry in query:
+            yield entry.to_tweet()
 
     def num_tweets(self):
-        query = """
-            SELECT count(twitter_id) FROM tweets
-        """
-        result = self.query_one(query)
-        return result[0]
+        return self.session.query(Tweet).count()
 
     def tweets_for_month(self, year, month_number):
         start_date = arrow.Arrow(year, month_number, 1)
         end_date = start_date.shift(months=+1)
 
-        query = """
-           SELECT twitter_id, text, timestamp FROM tweets
-                WHERE (timestamp > ?) AND (timestamp < ?)
-                ORDER BY twitter_id ASC
-        """
-        for row in self.query_many(query, start_date.timestamp, end_date.timestamp):
-            yield self.tweet_from_row(row)
+        query = (
+            self.session.query(Tweet)
+            .order_by(Tweet.twitter_id.asc())
+            .filter(start_date.timestamp < Tweet.timestamp)
+            .filter(Tweet.timestamp < end_date.timestamp)
+        )
+        for entry in query:
+            yield entry.to_tweet()
 
     def date_range(self):
-        start_row = self.query_one("SELECT min(timestamp) FROM tweets")
-        end_row = self.query_one("SELECT max(timestamp) FROM tweets")
-        return (start_row[0], end_row[0])
+        start_row = self.session.query(func.min(Tweet.timestamp)).scalar()
+        end_row = self.session.query(func.max(Tweet.timestamp)).scalar()
+        return (start_row, end_row)
 
     def tweet_by_id(self, twitter_id):
-        query = """
-            SELECT twitter_id, text, timestamp FROM tweets
-                WHERE twitter_id=?
-        """
-        row = self.query_one(query, (twitter_id,))
-        if not row:
-            raise NoSuchId(twitter_id)
-        return self.tweet_from_row(row)
+        entry = self._tweet_entry_by_id(twitter_id)
+        return entry.to_tweet()
 
     def set_text(self, twitter_id, text):
-        query = """
-            UPDATE tweets
-                SET text = ?
-                WHERE twitter_id = ?
-        """
-        cursor = self.connection.cursor()
-        cursor.execute(query, (text, twitter_id))
-        self.connection.commit()
+        entry = self._tweet_entry_by_id(twitter_id)
+        entry.text = text
+        self.session.commit()
 
     def search_tweet(self, pattern):
         full_pattern = "%" + pattern + "%"
-        query = """
-            SELECT twitter_id, text, timestamp FROM tweets
-                WHERE text MATCH ?
-                ORDER BY twitter_id ASC
-        """
-        for row in self.query_many(query, full_pattern):
-            yield self.tweet_from_row(row)
+        query = self.session.query(Tweet).filter(Tweet.text.ilike(full_pattern))
+        for entry in query:
+            yield entry.to_tweet()
 
-    @classmethod
-    def tweet_from_row(cls, row):
-        return twittback.Tweet(
-            twitter_id=row["twitter_id"], text=row["text"], timestamp=row["timestamp"]
+    def _tweet_entry_by_id(self, twitter_id):
+        entry = (
+            self.session.query(Tweet)
+            .filter(Tweet.twitter_id == twitter_id)
+            .one_or_none()
         )
-
-    @classmethod
-    def tweet_to_row(cls, tweet):
-        return (tweet.twitter_id, tweet.text, tweet.timestamp)
+        if not entry:
+            raise NoSuchId(twitter_id)
+        return entry
 
     def user(self):
-        query = "SELECT screen_name, name, description, location FROM user"
-        row = self.query_one(query)
-        return self.user_from_row(row)
+        entry = self.session.query(User).one()
+        return entry.to_user()
 
     def save_user(self, user):
-        query = """
-            INSERT OR REPLACE INTO user
-                (screen_name, name, description, location) VALUES
-                (?, ?, ?, ?)
-        """
-        params = self.user_to_row(user)
-        cursor = self.connection.cursor()
-        cursor.execute(query, params)
-        self.connection.commit()
+        self.session.query(User).delete()
 
-    @classmethod
-    def user_from_row(cls, row):
-        return twittback.User(
-            screen_name=row["screen_name"],
-            name=row["name"],
-            description=row["description"],
-            location=row["location"],
-        )
+        entry = User.from_(user)
+        entry.screen_name = user.screen_name
+        entry.name = user.name
+        entry.description = user.description
+        entry.location = user.location
 
-    @classmethod
-    def user_to_row(cls, user):
-        return (user.screen_name, user.name, user.description, user.location)
+        self.session.add(entry)
+        self.session.commit()
 
     def following(self):
-        query = """
-            SELECT screen_name, name, description, location
-            FROM following
-        """
-        rows = self.query_many(query)
-        for row in rows:
-            yield self.user_from_row(row)
+        for entry in self.session.query(Following).all():
+            yield entry.to_user()
 
     def save_following(self, following):
-        self.connection.execute("DELETE FROM following")
-        self.connection.commit()
+        self.session.query(Following).delete()
 
-        query = """
-            INSERT OR REPLACE INTO following
-                (screen_name, name, description, location) VALUES
-                (?, ?, ?, ?)
-        """
-
-        def yield_params():
-            for user in following:
-                yield self.user_to_row(user)
-
-        self.connection.executemany(query, yield_params())
-        self.connection.commit()
-
-    def query_one(self, query, *args):
-        cursor = self.connection.cursor()
-        cursor.execute(query, *args)
-        res = cursor.fetchone()
-        if res:
-            return res
-        else:
-            return None
-
-    def query_many(self, query, *args):
-        cursor = self.connection.cursor()
-        cursor.execute(query, args)
-        yield from cursor.fetchall()
-
-    def __str__(self):
-        return "<Repository in %s>" % self.db_path
+        for user in following:
+            self.session.add(Following.from_(user))
+        self.session.commit()
 
 
 def get_repository():
