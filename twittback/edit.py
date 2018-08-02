@@ -10,7 +10,7 @@ import twittback.repository
 def edit(repository, twitter_id):
     try:
         tweet = repository.tweet_by_id(twitter_id)
-    except twittback.repository.NoSuchId as e:
+    except twittback.repository.NoSuchId:
         sys.exit("No such id: %s" % twitter_id)
     _, path = tempfile.mkstemp()
     with open(path, "w") as stream:
