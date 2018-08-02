@@ -8,7 +8,10 @@ Flask = "==0.12.1"
 "path.py" = "==9.0.1"
 "ruamel.yaml" = "==0.14.6"
 requests = "==2.12.4"
-twitter = "==1.17.1"
+attrs = "*"
+arrow = "*"
+feedgenerator = "*"
+python-twitter = "*"
 
 [dev-packages]
 "beautifulsoup4" = "==4.5.3"
@@ -22,6 +25,7 @@ apipkg = "==1.4"
 py = "==1.4.31"
 pytest = "==3.0.4"
 pytest-flask = "==0.10.0"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.6"
