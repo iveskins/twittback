@@ -100,13 +100,14 @@ def build_feed(config):
     return atom1_feed
 
 
-def build_presenter(flask_app, feed):
+def build_presenter(flask_app, feed, config):
     presenter = twittback.presenter.Presenter()
     presenter.app = flask_app
     renderer = twittback.presenter.renderer.Renderer()
     renderer.app = flask_app
     presenter.renderer = renderer
     presenter.feed = feed
+    presenter.user_screen_name = config["user"]["screen_name"]
     return presenter
 
 
@@ -116,7 +117,7 @@ def build_server():
 
     flask_app = build_flask_app(server_config)
     feed = build_feed(server_config)
-    presenter = build_presenter(flask_app, feed)
+    presenter = build_presenter(flask_app, feed, app_config)
 
     server = Server()
 

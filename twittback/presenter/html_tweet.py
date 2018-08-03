@@ -4,9 +4,10 @@ import arrow
 
 
 class HTMLTweet:
-    def __init__(self, app, tweet):
+    def __init__(self, app, tweet, user_screen_name):
         self.app = app
         self.tweet = tweet
+        self.user_screen_name = user_screen_name
 
     @property
     def date(self):
@@ -22,6 +23,10 @@ class HTMLTweet:
         res = self.insert_span_around_handles(res)
         res = self.handle_hashtags(res)
         return self.surround_with_pre(res)
+
+    @property
+    def twitter_url(self):
+        return "https://twitter.com/%s/status/%s" % (self.user_screen_name, self.tweet.twitter_id)
 
     @classmethod
     def surround_with_pre(cls, res):

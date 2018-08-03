@@ -1,4 +1,3 @@
-import textwrap
 from unittest import mock
 
 import twittback
@@ -11,7 +10,7 @@ def test_insert_spans():
     app = mock.Mock()
     app.url_for = mock.Mock()
     app.url_for.return_value = "http://example.com/search?pattern=stuff"
-    html_tweet = twittback.presenter.HTMLTweet(app, tweet)
+    html_tweet = twittback.presenter.HTMLTweet(app, tweet, "my_user")
     expected = "<pre>"
     expected += "Talking to "
     expected += '<span class="handle">@bob</span> '
@@ -24,7 +23,7 @@ def test_insert_spans():
 def test_do_not_break_urls():
     tweet = twittback.Tweet(twitter_id=1, text="http://example.com#1 has an anchor")
     app = mock.Mock()
-    html_tweet = twittback.presenter.HTMLTweet(app, tweet)
+    html_tweet = twittback.presenter.HTMLTweet(app, tweet, "my_user")
     expected = "<pre>"
     expected += "http://example.com#1 has an anchor"
     expected += "</pre>"

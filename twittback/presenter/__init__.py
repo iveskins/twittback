@@ -10,6 +10,7 @@ class Presenter:
         self.renderer = None
         self.feed = None
         self.app = None
+        self.user_screen_name = None
 
     def index(self, *, user, date_range, num_tweets):
         start_timestamp, end_timestamp = date_range
@@ -76,7 +77,7 @@ class Presenter:
         return self.renderer.render("not_found.html", dict())
 
     def tweet_for_template(self, tweet):
-        return HTMLTweet(self.app, tweet)
+        return HTMLTweet(self.app, tweet, self.user_screen_name)
 
     def tweets_for_template(self, tweets):
         return [self.tweet_for_template(t) for t in tweets]
