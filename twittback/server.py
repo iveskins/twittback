@@ -62,7 +62,7 @@ class Server:
         return self.presenter.by_month(year, month, tweets_for_month)
 
     def search(self, pattern):
-        max_search_results = 100
+        max_search_results = 1000
         tweets = list(self.repository.search_tweet(pattern))
         error = None
         if len(tweets) >= max_search_results:
