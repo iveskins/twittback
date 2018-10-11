@@ -20,3 +20,7 @@ pytest = "^3.8"
 black = "^18.3"
 flake8 = "^3.5"
 mccabe = "^0.6.1"
+
+[tool.poetry.scripts]
+twittback = "twittback.backupper:main"
+twittback-edit = "twittback.edit:main"
