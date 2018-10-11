@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "twittback"
+version = "0.1.0"
+description = "User friendly backup of your Twitter account"
+authors = ["Dimitri Merejkowsky <d.merej@gmail.com>"]
+
+[tool.poetry.dependencies]
+Flask = "*"
+"path.py" = "*"
+"ruamel.yaml" = "*"
+requests = "*"
+attrs = "*"
+arrow = "*"
+feedgenerator = "*"
+python-twitter = "*"
+sqlalchemy = "*"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.8"
+black = "^18.3"
+flake8 = "^3.5"
+mccabe = "^0.6.1"
