@@ -1,5 +1,6 @@
 import sys
 
+
 class Backupper:
     def __init__(self, *, client, repository):
         self.client = client

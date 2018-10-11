@@ -26,7 +26,10 @@ class HTMLTweet:
 
     @property
     def twitter_url(self):
-        return "https://twitter.com/%s/status/%s" % (self.user_screen_name, self.tweet.twitter_id)
+        return "https://twitter.com/%s/status/%s" % (
+            self.user_screen_name,
+            self.tweet.twitter_id,
+        )
 
     @classmethod
     def surround_with_pre(cls, res):

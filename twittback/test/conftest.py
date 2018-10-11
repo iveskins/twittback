@@ -86,6 +86,7 @@ def bob():
         screen_name="bob", name="Bob Lennon", location="", description="Famous Guy"
     )
 
+
 @pytest.fixture
 def eve():
     return twittback.User(
